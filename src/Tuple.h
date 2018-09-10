@@ -79,6 +79,7 @@ public:
         m_y -= rhs.m_y;
         m_z -= rhs.m_z;
         m_w -= rhs.m_w;
+        return *this;
     }
 
     // operator *=
@@ -88,6 +89,7 @@ public:
         m_y *= scalar;
         m_z *= scalar;
         m_w *= scalar;
+        return *this;
     }
 
     // operator /=
@@ -97,6 +99,7 @@ public:
         m_y /= scalar;
         m_z /= scalar;
         m_w /= scalar;
+        return *this;
     }
 
     // operator+
