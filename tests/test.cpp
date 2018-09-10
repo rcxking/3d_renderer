@@ -26,13 +26,13 @@ SCENARIO( "a tuple can be created", "[Tuple]" )
             THEN( "it is initialized to default values" )
             {
                 /*
-                 * Default tuple is ( 0.0, 0.0, 0.0, true ),
+                 * Default tuple is ( 0.0, 0.0, 0.0, 0.0 ),
                  * representing a point at (0.0, 0.0, 0.0)
                  */
                 REQUIRE( tuple.GetX()    == 0.0 );
                 REQUIRE( tuple.GetY()    == 0.0 );
                 REQUIRE( tuple.GetZ()    == 0.0 );
-                REQUIRE( tuple.IsPoint() == true );
+                REQUIRE( tuple.GetW()    == 0.0 );
             }
         }
 
@@ -41,10 +41,10 @@ SCENARIO( "a tuple can be created", "[Tuple]" )
             Tuple point( 4.3, -4.2, 3.1, 1.0 );
             THEN( "it is initialized with the correct values" )
             {
-                REQUIRE( point.GetX()    == 4.3 );
+                REQUIRE( point.GetX()    ==  4.3 );
                 REQUIRE( point.GetY()    == -4.2 );
-                REQUIRE( point.GetZ()    == 3.1 );
-                REQUIRE( point.IsPoint() == true );
+                REQUIRE( point.GetZ()    ==  3.1 );
+                REQUIRE( point.GetW()    ==  1.0 );
             }
         }
 
@@ -53,10 +53,10 @@ SCENARIO( "a tuple can be created", "[Tuple]" )
             Tuple vector( 4.3, -4.2, 3.1, 0.0 );
             THEN( "it is initialized with the correct values" )
             {
-                REQUIRE( vector.GetX()    == 4.3 );
+                REQUIRE( vector.GetX()    ==  4.3 );
                 REQUIRE( vector.GetY()    == -4.2 );
-                REQUIRE( vector.GetZ()    == 3.1 );
-                REQUIRE( vector.IsPoint() == false );
+                REQUIRE( vector.GetZ()    ==  3.1 );
+                REQUIRE( vector.GetW()    ==  0.0 );
             }
         }
     }
@@ -90,10 +90,10 @@ SCENARIO( "a tuple can be created", "[Tuple]" )
             tuple1 += tuple2;
             THEN( "the sum of the tuples has the correct values" )
             {
-                REQUIRE( tuple1.GetX() == 1 );
-                REQUIRE( tuple1.GetY() == 1 );
-                REQUIRE( tuple1.GetZ() == 6 );
-                REQUIRE( tuple1.IsPoint() == true );
+                REQUIRE( tuple1.GetX() == 1   );
+                REQUIRE( tuple1.GetY() == 1   );
+                REQUIRE( tuple1.GetZ() == 6   );
+                REQUIRE( tuple1.GetW() == 1.0 );
             }
         }
         WHEN( "two tuples are added together" )
@@ -103,10 +103,10 @@ SCENARIO( "a tuple can be created", "[Tuple]" )
             Tuple tuple3 = tuple1 + tuple2;
             THEN( "the sum of the tuples has the correct values" )
             {
-                REQUIRE( tuple3.GetX() == 1 );
-                REQUIRE( tuple3.GetY() == 1 );
-                REQUIRE( tuple3.GetZ() == 6 );
-                REQUIRE( tuple3.IsPoint() == true );
+                REQUIRE( tuple3.GetX() == 1.0 );
+                REQUIRE( tuple3.GetY() == 1.0 );
+                REQUIRE( tuple3.GetZ() == 6.0 );
+                REQUIRE( tuple3.GetW() == 1.0 );
             } 
         }
         WHEN( "a tuple is subtracted from another" )
@@ -168,10 +168,39 @@ SCENARIO( "a tuple can be created", "[Tuple]" )
         {
             Tuple tuple( 1, -2, 3, 1 );
             Tuple negated = -tuple;
-            const Tuple EXPECTED( -1, 2, -3, 1 );
+            const Tuple EXPECTED( -1, 2, -3, -1 );
             THEN( "the negation has the correct values" )
             {
                 REQUIRE( negated == EXPECTED );
+            }
+        }
+        WHEN( "multiplying by a scalar" )
+        {
+            Tuple tuple1( 1, -2, 3, 0 );
+            tuple1 *= 3.5;
+            const Tuple EXPECTED1( 3.5, -7, 10.5, 0 );
+
+            Tuple tuple2( 1, -2, 3, 1 );
+            Tuple product = tuple2 * 0.5;
+            const Tuple EXPECTED2( 0.5, -1, 1.5, 0.5 );
+
+            THEN( "the tuples have the appropriate scaling" )
+            {
+                REQUIRE( tuple1 == EXPECTED1 );
+                REQUIRE( product == EXPECTED2 );
+            }
+        }
+        WHEN( "dividing by a scalar" )
+        {
+            Tuple tuple1( 1, -2, 3, -4 );
+            tuple1 /= 2;
+
+            Tuple tuple2( 1, -2, 3, -4 );
+            
+            THEN( "the tuples have the appropriate values" )
+            {
+                REQUIRE(         tuple1 == Tuple( 0.5, -1, 1.5, -2 ) );
+                REQUIRE( ( tuple2 / 2 ) == Tuple( 0.5, -1, 1.5, -2 ) );
             }
         }
     }
@@ -190,7 +219,7 @@ SCENARIO( "a point is created", "[Point]" )
                 REQUIRE( point.GetX() == 0.0 );
                 REQUIRE( point.GetY() == 0.0 );
                 REQUIRE( point.GetZ() == 0.0 );
-                REQUIRE( point.IsPoint() == true );
+                REQUIRE( point.GetW() == 1.0 );
             }
         }
         
@@ -202,7 +231,7 @@ SCENARIO( "a point is created", "[Point]" )
                 REQUIRE( point.GetX() == 4 );
                 REQUIRE( point.GetY() == -4 );
                 REQUIRE( point.GetZ() == 3 );
-                REQUIRE( point.IsPoint() == true );
+                REQUIRE( point.GetW() == 1.0 );
             }
         }
     } 
@@ -221,7 +250,7 @@ SCENARIO( "a vector is created", "[Vector]" )
                 REQUIRE( vector.GetX() == 0.0 );
                 REQUIRE( vector.GetY() == 0.0 );
                 REQUIRE( vector.GetZ() == 0.0 );
-                REQUIRE( vector.IsPoint() == false );
+                REQUIRE( vector.GetW() == 0.0 );
             }
         }
 
@@ -230,10 +259,10 @@ SCENARIO( "a vector is created", "[Vector]" )
             Vector vector( 4, -4, 3 );
             THEN( "it is initialized with the correct values" )
             {
-                REQUIRE( vector.GetX() == 4 );
-                REQUIRE( vector.GetY() == -4 );
-                REQUIRE( vector.GetZ() == 3 );
-                REQUIRE( vector.IsPoint() == false );
+                REQUIRE( vector.GetX() ==  4.0 );
+                REQUIRE( vector.GetY() == -4.0 );
+                REQUIRE( vector.GetZ() ==  3.0 );
+                REQUIRE( vector.GetW() ==  0.0 );
             }
         }
     }
