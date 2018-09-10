@@ -140,7 +140,7 @@ public:
     inline void SetZ( const double z ) { m_z = z; }
     inline void SetW( const double w ) { m_w = w; }
         
-private:
+protected:
 
     // Comparing floating point numbers with each other safely:
     bool IsEqual( const double lhs, const double rhs ) const
@@ -166,5 +166,33 @@ class Vector : public Tuple
 public:
     Vector() : Tuple( 0.0, 0.0, 0.0, 0.0 ) {}
     Vector( double x, double y, double z ) : Tuple( x, y, z, 0.0 ) {}
+
+    // Compute the magnitude of the vector
+    inline double GetMagnitude() const
+    {
+        return sqrt( (m_x*m_x) + (m_y*m_y) + (m_z*m_z) + (m_w*m_w) );
+    }
+
+    // Normalize the vector
+    Vector Normalize() const
+    {
+        const double MAGNITUDE = GetMagnitude();
+        return Vector( m_x / MAGNITUDE, m_y / MAGNITUDE, m_z / MAGNITUDE );
+    }
+
+    // Dot product
+    double Dot( const Vector& rhs ) const
+    {
+        return ( m_x * rhs.m_x ) + ( m_y * rhs.m_y ) + ( m_z * rhs.m_z );
+    }
+
+    // Cross product
+    Vector Cross( const Vector& rhs ) const
+    {
+        const double I_TERM = ( m_y * rhs.m_z ) - ( rhs.m_y * m_z );
+        const double J_TERM = -1.0 * ( ( m_x * rhs.m_z ) - ( rhs.m_x * m_z ) );
+        const double K_TERM = ( m_x * rhs.m_y ) - ( rhs.m_x * m_y );
+        return Vector( I_TERM, J_TERM, K_TERM );
+    }
 };
 #endif
