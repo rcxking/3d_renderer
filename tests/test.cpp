@@ -58,7 +58,122 @@ SCENARIO( "a tuple can be created", "[Tuple]" )
                 REQUIRE( vector.GetZ()    == 3.1 );
                 REQUIRE( vector.IsPoint() == false );
             }
-        }        
+        }
+    }
+
+    GIVEN( "operations need to be performed on a tuple" )
+    {
+        WHEN( "two identical tuples are compared" )
+        {
+            Tuple tuple1( 4.3, -4.2, 3.1, 1.0 );
+            Tuple tuple2( 4.3, -4.2, 3.1, 1.0 );
+            THEN( "the tuples equal each other" )
+            {
+                bool isEqual = ( tuple1 == tuple2 );
+                REQUIRE( isEqual == true );
+            }
+        }
+        WHEN( "two different tuples are compared" )
+        {
+            Tuple tuple1;
+            Tuple tuple2( 4.3, -4.2, 3.1, 1.0 );
+            THEN( "the tuples do not equal each other" )
+            {
+                bool isEqual = ( tuple1 == tuple2 );
+                REQUIRE( isEqual == false );
+            }
+        }
+        WHEN( "a tuple is added to another" )
+        {
+            Tuple tuple1( 3, -2, 5, 1 );
+            Tuple tuple2( -2, 3, 1, 0 );
+            tuple1 += tuple2;
+            THEN( "the sum of the tuples has the correct values" )
+            {
+                REQUIRE( tuple1.GetX() == 1 );
+                REQUIRE( tuple1.GetY() == 1 );
+                REQUIRE( tuple1.GetZ() == 6 );
+                REQUIRE( tuple1.IsPoint() == true );
+            }
+        }
+        WHEN( "two tuples are added together" )
+        {
+            Tuple tuple1( 3, -2, 5, 1 );
+            Tuple tuple2( -2, 3, 1, 0 );
+            Tuple tuple3 = tuple1 + tuple2;
+            THEN( "the sum of the tuples has the correct values" )
+            {
+                REQUIRE( tuple3.GetX() == 1 );
+                REQUIRE( tuple3.GetY() == 1 );
+                REQUIRE( tuple3.GetZ() == 6 );
+                REQUIRE( tuple3.IsPoint() == true );
+            } 
+        }
+        WHEN( "a tuple is subtracted from another" )
+        {
+            Point pt1( 3, 2, 1 );
+            Point pt2( 5, 6, 7 );
+            pt1 -= pt2;
+            const Vector EXPECTED( -2, -4, -6 );
+            THEN( "the difference of the tuples has the correct values" )
+            {
+                REQUIRE( pt1 == EXPECTED );
+            }
+        }
+        WHEN( "the difference between two tuples is found" )
+        {
+            Point pt1( 3, 2, 1 );
+            Point pt2( 5, 6, 7 );
+            Tuple difference = pt1 - pt2;
+            const Vector EXPECTED( -2, -4, -6 );
+            THEN( "the difference of the tuples has the correct values" )
+            {
+                REQUIRE( difference == EXPECTED );
+            }
+        }
+        WHEN( "a vector is subtracted from a point" )
+        {
+            Point pt( 3, 2, 1 );
+            Vector vec( 5, 6, 7 );
+            Tuple difference = pt - vec;
+            const Point EXPECTED( -2, -4, -6 );
+            THEN( "the difference has the correct values" )
+            {
+                REQUIRE( difference == EXPECTED );
+            }
+        }
+        WHEN( "two vectors are subtracted" )
+        {
+            Vector vec1( 3, 2, 1 );
+            Vector vec2( 5, 6, 7 );
+            Tuple difference = vec1 - vec2;
+            const Vector EXPECTED( -2, -4, -6 );
+            THEN( "the difference has the correct values" )
+            {
+                REQUIRE( difference == EXPECTED );
+            }
+        }
+        WHEN( "subtracting a vector from the zero vector" )
+        {
+            Vector zero;
+            Vector vec1( 1, -2, 3 );
+            Tuple difference = zero - vec1;
+            const Vector EXPECTED( -1, 2, -3 );
+            THEN( "the difference has the correct values" )
+            {
+                REQUIRE( difference == EXPECTED );
+            }
+        }
+        WHEN( "negating a tuple" )
+        {
+            Tuple tuple( 1, -2, 3, 1 );
+            Tuple negated = -tuple;
+            const Tuple EXPECTED( -1, 2, -3, 1 );
+            THEN( "the negation has the correct values" )
+            {
+                REQUIRE( negated == EXPECTED );
+            }
+        }
     }
 }
 
