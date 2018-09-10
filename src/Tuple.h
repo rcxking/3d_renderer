@@ -16,28 +16,25 @@
 class Tuple
 {
 public:
-    /*
-     * Default Constructor.  Tuple is initialized to (0.0, 0.0, 0.0) and
-     * is a point.
-     */
+    // Default Constructor.  Tuple is initialized to (0.0, 0.0, 0.0, 0.0)
     Tuple() : m_x( 0.0 ),
               m_y( 0.0 ),
               m_z( 0.0 ),
-              m_isPoint( true ) {}
+              m_w( 0.0 ) {}
 
     // Constructor with arguments
-    Tuple( double x, double y, double z, bool isPoint ) :
+    Tuple( double x, double y, double z, double w ) :
         m_x( x ),
         m_y( y ),
         m_z( z ),
-        m_isPoint( isPoint ) {}
+        m_w( w ) {}
 
     // Copy Constructor
     Tuple( const Tuple& rhs ) :
         m_x( rhs.m_x ),
         m_y( rhs.m_y ),
         m_z( rhs.m_z ),
-        m_isPoint( rhs.m_isPoint ) {}
+        m_w( rhs.m_w ) {}
 
     // Destructor
     ~Tuple() {}
@@ -51,7 +48,7 @@ public:
             m_x = rhs.m_x;
             m_y = rhs.m_y;
             m_z = rhs.m_z;
-            m_isPoint = rhs.m_isPoint;
+            m_w = rhs.m_w;
         }
         return *this;
     }
@@ -62,7 +59,7 @@ public:
        return IsEqual( m_x, rhs.m_x ) &&
               IsEqual( m_y, rhs.m_y ) &&
               IsEqual( m_z, rhs.m_z ) &&
-              ( m_isPoint == rhs.m_isPoint );
+              IsEqual( m_w, rhs.m_w );
     }
 
     // operator+= 
@@ -71,7 +68,7 @@ public:
         m_x += rhs.m_x;
         m_y += rhs.m_y;
         m_z += rhs.m_z;
-        m_isPoint = m_isPoint || rhs.m_isPoint; 
+        m_w += rhs.m_w;
         return *this;
     }
 
@@ -81,7 +78,25 @@ public:
         m_x -= rhs.m_x;
         m_y -= rhs.m_y;
         m_z -= rhs.m_z;
-        m_isPoint -= rhs.m_isPoint;
+        m_w -= rhs.m_w;
+    }
+
+    // operator *=
+    Tuple& operator*=( const double scalar )
+    {
+        m_x *= scalar;
+        m_y *= scalar;
+        m_z *= scalar;
+        m_w *= scalar;
+    }
+
+    // operator /=
+    Tuple& operator/=( const double scalar )
+    {
+        m_x /= scalar;
+        m_y /= scalar;
+        m_z /= scalar;
+        m_w /= scalar;
     }
 
     // operator+
@@ -96,24 +111,35 @@ public:
         return Tuple( *this ) -= rhs;
     }
 
+    // operator*
+    const Tuple operator*( const double scalar )
+    {
+        return Tuple( *this ) *= scalar;
+    }
+
+    // operator/
+    const Tuple operator/( const double scalar )
+    {
+        return Tuple( *this ) /= scalar;
+    }
+
     // Negation operator:
     const Tuple operator-()
     {
-        return Tuple( -1 * m_x, -1 * m_y, -1 * m_z, m_isPoint ); 
+        return Tuple( -1 * m_x, -1 * m_y, -1 * m_z, -1 * m_w ); 
     }
 
     // Accessors/Modifiers:
     inline double GetX() const { return m_x; }
     inline double GetY() const { return m_y; }
     inline double GetZ() const { return m_z; }
+    inline double GetW() const { return m_w; }
 
-    inline bool IsPoint() const { return m_isPoint; }
-
-    void SetX( const double x ) { m_x = x; }
-    void SetY( const double y ) { m_y = y; }
-    void SetZ( const double z ) { m_z = z; }
-    void SetIsPoint( const bool isPoint ) { m_isPoint = isPoint; }
-
+    inline void SetX( const double x ) { m_x = x; }
+    inline void SetY( const double y ) { m_y = y; }
+    inline void SetZ( const double z ) { m_z = z; }
+    inline void SetW( const double w ) { m_w = w; }
+        
 private:
 
     // Comparing floating point numbers with each other safely:
@@ -123,25 +149,22 @@ private:
         return fabs( lhs - rhs ) < EPSILON;
     }
 
-    // (x, y, z) coordinates:
-    double m_x, m_y, m_z;
-
-    // Does this tuple represent a point?
-    bool m_isPoint;
+    // (x, y, z, w) coordinates:
+    double m_x, m_y, m_z, m_w;
 };
 
 // Derived classes to aid in the creation of Points/Vectors
 class Point : public Tuple
 {
 public:
-    Point() : Tuple( 0.0, 0.0, 0.0, true ) {}
-    Point( double x, double y, double z ) : Tuple( x, y, z, true ) {}
+    Point() : Tuple( 0.0, 0.0, 0.0, 1.0 ) {}
+    Point( double x, double y, double z ) : Tuple( x, y, z, 1.0 ) {}
 };
 
 class Vector : public Tuple
 {
 public:
-    Vector() : Tuple( 0.0, 0.0, 0.0, false ) {}
-    Vector( double x, double y, double z ) : Tuple( x, y, z, false ) {}
+    Vector() : Tuple( 0.0, 0.0, 0.0, 0.0 ) {}
+    Vector( double x, double y, double z ) : Tuple( x, y, z, 0.0 ) {}
 };
 #endif
