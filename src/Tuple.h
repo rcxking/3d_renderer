@@ -170,6 +170,16 @@ public:
     Vector() : Tuple( 0.0, 0.0, 0.0, 0.0 ) {}
     Vector( double x, double y, double z ) : Tuple( x, y, z, 0.0 ) {}
 
+    // Operator=
+    Vector& operator=( const Tuple& rhs )
+    {
+        m_x = rhs.GetX();
+        m_y = rhs.GetY();
+        m_z = rhs.GetZ();
+        m_w = rhs.GetW();
+        return *this;
+    }
+
     // Compute the magnitude of the vector
     inline double GetMagnitude() const
     {

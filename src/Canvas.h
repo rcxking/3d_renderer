@@ -101,7 +101,12 @@ public:
 
     inline void WritePixel( const int x, const int y, const Color& color )
     {
-        m_canvas[ y ][ x ] = color;
+        // Ensure the pixel value is accessible
+        if( ( x > 0 ) && ( x < m_width ) &&
+            ( y > 0 ) && ( y < m_height ) )
+        {  
+            m_canvas[ y ][ x ] = color;
+        }
     }
 
 private:
