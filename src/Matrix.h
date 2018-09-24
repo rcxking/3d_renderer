@@ -9,6 +9,8 @@
 #ifndef _MATRIX_H_
 #define _MATRIX_H_
 
+#include "Tuple.h"
+
 #include <cassert>
 #include <cstring>
 #include <cmath>
@@ -138,10 +140,33 @@ public:
         return *this;
     }
 
-    // operator*
+    // operator* (matrix multiplication)
     const Matrix operator*( const Matrix& rhs ) const
     {
         return Matrix( *this ) *= rhs;
+    }
+
+    // operator* (matrix x tuple)
+    const Tuple operator*( const Tuple& rhs ) const
+    {
+        // Ensure this matrix's columns == 4  
+        assert( m_cols == 4 );
+
+        // Convert the tuple to a 4x1 matrix
+        double values[] = { rhs.GetX(),
+                            rhs.GetY(),
+                            rhs.GetZ(),
+                            rhs.GetW() };
+        Matrix rhsMatrix( 4, 1, values, 4 ); 
+
+        Matrix result = Matrix( *this ) * rhsMatrix;  
+
+        Tuple product( result.GetValue( 0, 0 ),
+                       result.GetValue( 1, 0 ),
+                       result.GetValue( 2, 0 ),
+                       result.GetValue( 3, 0 ) );
+
+        return product;   
     }
 
     // Transpose
