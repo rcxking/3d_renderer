@@ -5,11 +5,14 @@ project(UnitTests)
 include_directories("../src")
 set(SRCS test.cpp)
 set(TUPLETESTSRCS TupleTest.cpp)
+set(COLORTESTSRCS ColorTest.cpp)
 
 add_executable(UnitTests ${SRCS})
 add_executable(TupleTest ${TUPLETESTSRCS})
+add_executable(ColorTest ${COLORTESTSRCS})
 
 # Catch2 unit test framework
 find_package(Catch2 REQUIRED)
 target_link_libraries(UnitTests Catch2::Catch2)
 target_link_libraries(TupleTest Catch2::Catch2)
+target_link_libraries(ColorTest Catch2::Catch2)
