@@ -17,7 +17,7 @@
 
 // Tell catch to provide its own "main" function
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 
 // Support STL Libraries
 #include <cmath>
