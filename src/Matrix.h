@@ -11,353 +11,300 @@
 
 #include "Tuple.h"
 
-#include <cassert>
 #include <cstring>
 #include <cmath>
+#include <cassert>
 
-class Matrix
-{
+class Matrix {
 public:
-    // Create an empty matrix
-    Matrix( int rows, int cols ) : m_rows( rows ), 
-                                   m_cols( cols ),
-                                   m_totalSize( rows * cols )
-    {
-        m_matrix = new double[ m_totalSize ];
-        memset( m_matrix, 0, sizeof( double ) * m_totalSize );
+  // Create an empty matrix
+  Matrix(const int rows, const int cols) : rows_(rows), 
+                                           cols_(cols),
+                                           totalSize_(rows * cols) {
+    matrix_ = new float[totalSize_];
+    memset(matrix_, 0, sizeof(float) * totalSize_);
+  }
+
+  // Create a matrix from an array of floats
+  Matrix(const int rows, const int cols, float *values) :
+       rows_(rows), cols_(cols), totalSize_(rows * cols) {
+    matrix_ = new float[totalSize_];
+    // Copy values over
+    memcpy(matrix_, values, sizeof(float) * totalSize_); 
+  }
+
+  // Assignment operator=
+  Matrix& operator=(const Matrix& rhs) {
+    // Check for self-referencing
+    if(this != &rhs) {
+      // Delete old allocation
+      delete [] matrix_;
+      rows_ = rhs.rows_;
+      cols_ = rhs.cols_;
+      totalSize_ = rhs.totalSize_;
+
+      matrix_ = new float[totalSize_];
+      memcpy(matrix_, rhs.matrix_, sizeof(float) * totalSize_);   
     }
 
-    // Create a matrix from an array of doubles
-    Matrix( int rows, int cols, double *values, int numElements ) :
-       m_rows( rows ), m_cols( cols ), m_totalSize( rows * cols )
-    {
-        // Ensure numElements equals the dimensions of the matrix
-        assert( numElements == ( rows * cols ) );
-    
-        m_matrix = new double[ m_totalSize ];
+    return *this;
+  }
 
-        // Copy values over
-        memcpy( m_matrix, values, sizeof( double ) * numElements ); 
+  // Copy constructor
+  Matrix(const Matrix& rhs) :
+                              rows_(rhs.rows_),
+                              cols_(rhs.cols_),
+                              totalSize_(rhs.totalSize_) {
+    matrix_ = new float[totalSize_];
+    memcpy(matrix_, rhs.matrix_, sizeof(float) * totalSize_); 
+  }
+
+  // Destructor
+  ~Matrix() {
+    if (matrix_) {
+      delete [] matrix_;
+      matrix_ = NULL;
     }
+  }
 
-    // Assignment operator=
-    Matrix& operator=( const Matrix& rhs )
-    {
-        // Check for self-referencing
-        if( this != &rhs )
-        {
-            // Delete old allocation
-            delete [] m_matrix;
+  // operator==
+  bool operator==(const Matrix& rhs) const {
+    const bool ROWS_EQUAL = (rows_ == rhs.rows_);
+    const bool COLS_EQUAL = (cols_ == rhs.cols_);
 
-            m_rows = rhs.m_rows;
-            m_cols = rhs.m_cols;
-            m_totalSize = rhs.m_totalSize;
-
-            m_matrix = new double[ m_totalSize ];
-            memcpy( m_matrix, rhs.m_matrix, sizeof( double ) * m_totalSize );   
+    if (ROWS_EQUAL && COLS_EQUAL) {
+      // Compare the values:
+      for (int i = 0; i < totalSize_; ++i) {
+        if (std::fabs(matrix_[i] - rhs.matrix_[i]) > 0.0001) {
+          return false;
         }
+      }
+    }
+    return true;
+  }  
 
-        return *this;
+  // Comparison operator !=
+  bool operator!=(const Matrix& rhs) const {
+    return !operator==(rhs);
+  }
+
+  // operator*= (matrix multiplication) 
+  Matrix& operator*= (const Matrix& rhs) {
+    Matrix temp(rows_, rhs.cols_);   
+    for (int y = 0; y < rows_; ++y) {
+      for (int x = 0; x < rhs.cols_; ++x) {
+        float dotProduct = 0.0;
+
+        for (int index = 0; index < cols_; ++index) {
+          const int thisIndex = y * cols_ + index;
+          const int thatIndex = index * rhs.cols_ + x;  
+          dotProduct += (matrix_[thisIndex] * rhs.matrix_[thatIndex]); 
+        }  
+
+        temp.SetValue(y, x, dotProduct);    
+      }
     }
 
-    // Copy constructor
-    Matrix( const Matrix& rhs ) :
-        m_rows( rhs.m_rows ),
-        m_cols( rhs.m_cols ),
-        m_totalSize( rhs.m_totalSize )
-    {
-        m_matrix = new double[ m_totalSize ];
-        memcpy( m_matrix, rhs.m_matrix, sizeof( double ) * m_totalSize ); 
-    }
+    // Copy over the new values
+    delete [] matrix_;
 
-    // Destructor
-    ~Matrix()
-    {
-        delete [] m_matrix;
-    }
+    rows_ = temp.rows_;
+    cols_ = temp.cols_;
+    totalSize_ = rows_ * cols_;
+    matrix_ = new float[totalSize_];
+    memcpy(matrix_, temp.matrix_, sizeof(float) * totalSize_);  
 
-    // operator==
-    bool operator==( const Matrix& rhs ) const
-    {
-        const bool ROWS_EQUAL = ( m_rows == rhs.m_rows );
-        const bool COLS_EQUAL = ( m_cols == rhs.m_cols );
+    return *this;
+  }
 
-        if( ROWS_EQUAL && COLS_EQUAL )
-        {
-            // Compare the values:
-            for( int i = 0; i < m_totalSize; ++i )
-            {
-                if( !IsEqual( m_matrix[ i ], rhs.m_matrix[ i ] ) )
-                {
-                   return false;
-                } 
-            }
-            return true;
-        }
-        return false;
-    }  
+  // operator* (matrix multiplication)
+  Matrix operator*(const Matrix& rhs) const {
+    return Matrix(*this) *= rhs;
+  }
+  
+  // operator* (matrix x tuple)
+  Tuple operator*(const Tuple& rhs) const {
 
-    // operator*= (matrix multiplication) 
-    Matrix& operator*= ( const Matrix& rhs )
-    {
-        /*
-         * Ensure that this matrix's columns match the
-         * other's rows.
-         *
-         * Example: Matrix A: 4 rows x 2 cols
-         *          Matrix B: 2 rows x 4 cols
-         *          Product: 4x4 matrix
-         */
-        assert( m_cols == rhs.m_rows );
+    // Convert the tuple to a 4x1 matrix
+    float values[] = {rhs.X(),
+                      rhs.Y(),
+                      rhs.Z(),
+                      rhs.W()};
+    Matrix rhsMatrix(4, 1, values); 
+    Matrix result = Matrix(*this) * rhsMatrix;  
 
-        Matrix temp( m_rows, rhs.m_cols );   
-        for( int y = 0; y < m_rows; ++y )
-        {
-            for( int x = 0; x < rhs.m_cols; ++x )
-            {
-                double dotProduct = 0.0;
+    Tuple product(result.GetValue(0, 0),
+                  result.GetValue(1, 0),
+                  result.GetValue(2, 0),
+                  result.GetValue(3, 0));
+    return product;   
+  }
+  
+  // Accessor/modifier functions
+  inline int GetRows() const { return rows_; }
+  inline int GetCols() const { return cols_; }
+  inline float GetValue(const int y, const int x) const { 
+    return matrix_[y * cols_ + x]; 
+  }
 
-                for( int index = 0; index < m_cols; ++index )
-                {
-                    const int thisIndex = y * m_cols + index;
-                    const int thatIndex = index * rhs.m_cols + x;  
-                    dotProduct += ( m_matrix[ thisIndex ] * rhs.m_matrix[ thatIndex ] ); 
-                }  
-
-               temp.SetValue( y, x, dotProduct );    
-            }
-        }
-
-        // Copy over the new values
-        delete [] m_matrix;
-
-        m_rows = temp.m_rows;
-        m_cols = temp.m_cols;
-        m_totalSize = m_rows * m_cols;
-        m_matrix = new double[ m_totalSize ];
-        memcpy( m_matrix, temp.m_matrix, sizeof( double ) * m_totalSize );  
-
-        return *this;
-    }
-
-    // operator* (matrix multiplication)
-    const Matrix operator*( const Matrix& rhs ) const
-    {
-        return Matrix( *this ) *= rhs;
-    }
-
-    // operator* (matrix x tuple)
-    const Tuple operator*( const Tuple& rhs ) const
-    {
-        // Ensure this matrix's columns == 4  
-        assert( m_cols == 4 );
-
-        // Convert the tuple to a 4x1 matrix
-        double values[] = { rhs.GetX(),
-                            rhs.GetY(),
-                            rhs.GetZ(),
-                            rhs.GetW() };
-        Matrix rhsMatrix( 4, 1, values, 4 ); 
-
-        Matrix result = Matrix( *this ) * rhsMatrix;  
-
-        Tuple product( result.GetValue( 0, 0 ),
-                       result.GetValue( 1, 0 ),
-                       result.GetValue( 2, 0 ),
-                       result.GetValue( 3, 0 ) );
-
-        return product;   
-    }
-
-    // Transpose
-    const Matrix Transpose() const
-    {
-        Matrix trans( m_rows, m_cols );
-
-        for( int row = 0; row < m_rows; ++row )
-        {
-           for( int col = 0; col < m_cols; ++col )
-           {
-                trans.SetValue( col, row, GetValue( row, col ) ); 
-           }
-        } 
-
-        return trans;
-    }
-
-    // Determinant
-    const double Determinant() const
-    {
-        // Ensure this matrix is square
-        assert( m_rows == m_cols );
-
-        double determinant = 0.0;
-
-        // Special case for a 2x2 matrix
-        if( m_rows == 2 )
-        {
-            // ad - bc
-            determinant = ( GetValue( 0, 0 ) * GetValue( 1, 1 ) ) -
-                          ( GetValue( 1, 0 ) * GetValue( 0, 1 ) ); 
-        }
-        else
-        {
-            /*
-             * For any square matrices larger than 2x2, the determinant is found
-             * by picking Row 0.  Multiply each element by its cofactor; the sum
-             * will be the determinant.
-             */
-           for( int col = 0; col < m_cols; ++col )
-           {
-                determinant += ( GetValue( 0, col ) * Cofactor( 0, col ) ); 
-           } 
-        } 
-
-        return determinant;
-    }
-
-    /*
-     * Submatrix.  Remove all values in the given row
-     * and column.
-     */
-    const Matrix Submatrix( const int row, const int col ) const
-    {
-        Matrix sub( m_rows - 1, m_cols - 1 );
-
-        int index = 0;
-
-        for( int rowIdx = 0; rowIdx < m_rows; ++rowIdx )
-        {
-            for( int colIdx = 0; colIdx < m_cols; ++colIdx )
-            {
-                // Skip any value in this row or column
-                if( ( rowIdx == row ) || ( colIdx == col ) )
-                {
-                    continue;
-                }
-                
-                sub.SetValue( index / sub.GetCols(), index % sub.GetCols(), GetValue( rowIdx, colIdx ) );
-
-                ++index;
-            }
-        }
-
-        return sub;
-    }
-
-    /*
-     * Minor
-     *
-     * The minor is the determinant of the submatrix at the given row and column.
-     */
-    const double Minor( const int row, const int col ) const
-    {
-        return Submatrix( row, col ).Determinant();
-    }
-
-    /*
-     * Cofactor
-     *
-     * The cofactor is computed by finding the minor at the given row
-     * and column.  If the sum of the given row and column is odd,
-     * negate the minor; otherwise return the minor.
-     */
-    const double Cofactor( const int row, const int col ) const
-    {
-        double cofactor = Minor( row, col );
-        if( ( row + col ) % 2 == 1 )
-        {
-            // Negate the minor
-            cofactor *= -1;
-        }
-
-        return cofactor;
-    }   
-    
-    /*
-     * IsInvertible
-     *
-     * A matrix is invertible if its determinant is NOT 0.
-     */
-    const bool IsInvertible() const
-    {
-        return ( Determinant() != 0 );
-    }
-
-    /*
-     * Inverse
-     *
-     * Calculate the matrix inverse with the following steps:
-     * 1) Create a cofactor matrix
-     * 2) Transpose the cofactor matrix
-     * 3) Divide each element by the determinant of the original matrix
-     */
-    const Matrix Inverse() const
-    {
-        Matrix cofactor( m_rows, m_cols );
-
-        // Generate the cofactor matrix
-        for( int row = 0; row < m_rows; ++row )
-        {
-            for( int col = 0; col < m_cols; ++col )
-            {
-                cofactor.SetValue( row, col, Cofactor( row, col ) );
-            }
-        }
-
-        // Get the transpose of the cofactor matrix
-        Matrix cofactorTranspose = cofactor.Transpose();
-
-        // Finally compute the inverse
-        const double DETERMINANT = Determinant();
-        Matrix inverse( m_rows, m_cols );
-        for( int row = 0; row < m_rows; ++row )
-        {
-            for( int col = 0; col < m_cols; ++col )
-            {
-                inverse.SetValue( row, col, cofactorTranspose.GetValue( row, col ) / DETERMINANT );
-            }
-        }
-
-        return inverse;
-    } 
-
-    // Accessor/modifier functions
-    inline int GetRows() const { return m_rows; }
-    inline int GetCols() const { return m_cols; }
-    inline double GetValue( const int y, const int x ) const { return m_matrix[ y * m_cols + x ]; }
-
-    inline void SetValue( const int y, const int x, const double val ) { m_matrix[ y * m_cols + x ] = val; }
-
-protected:
-
-    // Floating point comparison test
-    const bool IsEqual( const double lhs, const double rhs ) const
-    {
-        const double EPSILON = 0.0001;
-        return fabs( lhs - rhs ) < EPSILON;
-    } 
-
+  inline void SetValue(const int y, const int x, const float val) { 
+    matrix_[y * cols_ + x] = val; 
+  }
+private:
     // Matrix dimensions
-    int m_rows, m_cols, m_totalSize;
+    int rows_, cols_, totalSize_;
 
     // Pointer to storage backing
-    double *m_matrix; 
+    float *matrix_; 
 };
 
-// Identity Matrix
-class IdentityMatrix : public Matrix
-{
+// Function prototypes
+Matrix Identity(const int);
+Matrix Transpose(const Matrix &);
+float Determinant(const Matrix &);
+Matrix Submatrix(const Matrix &, const int, const int);
+float Minor(const Matrix &, const int, const int);
+float Cofactor(const Matrix &, const int, const int);
+bool IsInvertible(const Matrix &);
+Matrix Inverse(const Matrix &);
 
-public:
-    IdentityMatrix( int dimensions ) : Matrix( dimensions, dimensions )
-    {
-        // The diagonal should be 1.0:
-        for( int i = 0; i < dimensions; ++i )
-        {
-            SetValue( i, i, 1.0 );
-        }
-    }  
-};
+/**
+ * @brief  Constructs an n x n Identity Matrix
+ * @param n: dimension of Identity Matrix
+ * @return Matrix: Identity matrix of size n x n
+ */
+Matrix Identity(const int n) {
+  Matrix mat(n, n);
 
+  for (int i = 0; i < n; ++i) {
+    mat.SetValue(i, i, 1);
+  }
+  return mat;
+}
+
+/** 
+ * @brief  Computes the tranpose of a matrix
+ * @param mat: Matrix to compute the transpose of
+ * @return Matrix: Matrix transpose
+ */
+Matrix Transpose(const Matrix &mat) {
+  Matrix result(mat.GetRows(), mat.GetCols());
+
+  for (int y = 0; y < result.GetRows(); ++y) {
+    for (int x = 0; x < result.GetCols(); ++x) {
+      result.SetValue(y, x, mat.GetValue(x, y));
+    }
+  }
+
+  return result;
+}
+
+/**
+ * @brief  Computes the determinant of a 2x2 matrix
+ * @param mat: Matrix to compute the determinant of
+ * @return float: Determinant
+ */
+float Determinant(const Matrix &mat) {
+  if (mat.GetRows() == 2) {
+    // Special case for 2x2 matrices
+    return (mat.GetValue(0, 0) * mat.GetValue(1, 1)) -
+           (mat.GetValue(0, 1) * mat.GetValue(1, 0));
+  } else {
+    /*
+     * For larger matrices, the determinant is the sum
+     * of any row's elements each multiplied its cofactor.
+     */
+    float det = 0.0;
+    for (int x = 0; x < mat.GetCols(); ++x) {
+      det += (Cofactor(mat, 0, x) * mat.GetValue(0, x));
+    } 
+    return det;
+  }
+}
+
+/**
+ * @brief  Computes the submatrix of the given matrix.
+ * @param mat: Input matrix
+ * @param row, col: Eliminate values that are in either this row or column
+ * @return Matrix: Submatrix
+ */
+Matrix Submatrix(const Matrix &mat, const int row, const int col) {
+  // Submatrix removes the specified row and column from mat
+  const int NEW_ROWS = mat.GetRows() - 1;
+  const int NEW_COLS = mat.GetCols() - 1;
+  const int NEW_SIZE = NEW_ROWS * NEW_COLS;
+  float newVals[NEW_SIZE];
+  memset(newVals, 0, sizeof(newVals));
+
+  int idx = 0;
+  for (int y = 0; y < mat.GetRows(); ++y) {
+    for (int x = 0; x < mat.GetCols(); ++x) {
+      // Skip elements if it's the specified row or column:
+      if (y == row || x == col) {
+        continue;
+      }
+
+      newVals[idx] = mat.GetValue(y, x);
+      ++idx;
+    }
+  }
+
+  return Matrix(NEW_ROWS, NEW_COLS, newVals);
+}
+
+/**
+ * @brief  Computes the Minor of the given matrix.
+ * @param mat: Input matrix
+ * @param row, col: Compute the determinant of the submatrix of the given row/col
+ * @return float: Minor
+ */
+float Minor(const Matrix &mat, const int row, const int col) {
+  // The minor is the determinant of the submatrix at row and col
+  return Determinant(Submatrix(mat, row, col));
+}
+
+/**
+ * @brief  Computes the Cofactor of the given matrix.
+ * @param mat: Input matrix
+ * @param row, col: Compute the cofactor of the submatrix with the given row/col
+ * @return float: Cofactor
+ */
+float Cofactor(const Matrix &mat, const int row, const int col) {
+  // The Cofactor is the minor if (row + col) is even and -minor if (row + col) is odd
+  const float MINOR = Minor(mat, row, col);
+  return ((row + col) % 2 == 0) ? MINOR : -MINOR;
+} 
+
+/**
+ * @brief  Checks if a matrix is invertible
+ * @param mat: Input matrix
+ * @return bool: True if invertible; false if not
+ */
+bool IsInvertible(const Matrix &mat) {
+  // If the determinant is 0, the matrix is not invertible
+  return Determinant(mat) != 0.0;
+}
+
+/**
+ * @brief  Computes the inverse of the matrix.
+ * @param mat: Input matrix
+ * @return Matrix: Inverse
+ */
+Matrix Inverse(const Matrix &mat) {
+  // Ensure the matrix is invertible
+  assert(IsInvertible(mat) == true);
+
+  Matrix inv(mat.GetRows(), mat.GetCols());
+
+  const float MAT_DET = Determinant(mat);
+
+  for (int row = 0; row < mat.GetRows(); ++row) {
+    for (int col = 0; col < mat.GetCols(); ++col) {
+      const float C = Cofactor(mat, row, col);
+      inv.SetValue(col, row, C / MAT_DET); 
+    }
+  }
+
+  return inv;      
+}
 #endif

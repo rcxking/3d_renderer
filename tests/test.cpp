@@ -16,7 +16,7 @@
 #include "tuple_tests.h"
 #include "color_tests.h"
 #include "canvas_tests.h"
-#if 0
 #include "matrix_tests.h"
+#if 0
 #include "transform_tests.h"
 #endif
