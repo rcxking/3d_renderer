@@ -12,7 +12,6 @@
 #define _TUPLE_H_
 
 #include <cmath>
-#include <limits>
 
 class Tuple
 {
@@ -142,8 +141,7 @@ public:
 protected:        
     // Comparing floating point numbers with each other safely:
     bool IsEqual(const float num1, const float num2) const {
-      return std::fabs(num1 - num2) <=
-             std::numeric_limits<float>::epsilon();
+      return std::fabs(num1 - num2) <= 0.0001;
     }
 
     // (x, y, z) coordinates:

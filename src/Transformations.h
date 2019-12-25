@@ -1,3 +1,5 @@
+#ifndef __TRANSFORMATIONS_H_
+#define __TRANSFORMATIONS_H_
 /*
  * Transformations.h
  *
@@ -7,119 +9,99 @@
  * Bryant Pong
  * 9/17/18
  */
-
-#ifndef _TRANSFORMATIONS_H_
-#define _TRANSFORMATIONS_H_
-
 #include "Matrix.h"
 
 #include <cmath>
 
-/*
- * Translation Matrix
+/**
+ * @brief  Constructs a Translation matrix
+ * @param x, y, z: amount to translate by
+ * @return Matrix: Translation matrix
  */
-const Matrix Translation( const double x, const double y, const double z )
-{
-    Matrix temp = IdentityMatrix( 4 );
+Matrix Translation(const float x, const float y, const float z) {
+    Matrix temp = Identity(4);
 
     // The rightmost column is (from top to bottom): x y z 1
-    temp.SetValue( 0, 3, x );
-    temp.SetValue( 1, 3, y );
-    temp.SetValue( 2, 3, z );
+    temp.SetValue(0, 3, x);
+    temp.SetValue(1, 3, y);
+    temp.SetValue(2, 3, z);
 
     return temp;
 }
 
-/*
- * Scaling
- *
- * Pass in values < 1 to shrink; values > 1 to expand
+/**
+ * @brief  Constructs a scaling matrix.
+ *         Pass in values < 1 to shrink; > 1 to grow.
+ * @param x, y, z: scaling factors
+ * @return Matrix: Scaling matrix
  */
-const Matrix Scaling( const double x, const double y, const double z )
-{
-    Matrix temp( 4, 4 );
+Matrix Scaling(const float x, const float y, const float z) {
+    Matrix temp = Identity(4);
 
     // The main diagonal holds the scaling values
     temp.SetValue( 0, 0, x );
     temp.SetValue( 1, 1, y );
     temp.SetValue( 2, 2, z );
-    temp.SetValue( 3, 3, 1 );
 
     return temp;
 }
 
-/*
- * RotX
- *
- * Constructs a 3-Dimensional rotation matrix
- * around the X-Axis.
- *
- * @param theta double: angle to rotate in radians
+/**
+ * @brief  Computes rotation matrix around the X-Axis
+ *         using the left-hand rule.
+ * @param theta: Angle in radians to rotate
+ * @return Matrix: X-Axis Rotation Matrix
  */
-const Matrix RotX( const double theta )
-{
-    double values[] = { 1, 0,             0,            0,
-                        0, cos( theta ), -sin( theta ), 0,
-                        0, sin( theta ),  cos( theta ), 0,
-                        0, 0,             0,            1 };
-    
-    return Matrix( 4, 4, values, 16 ); 
+Matrix RotX(const float theta) {
+  float values[] = {1, 0,             0,            0,
+                    0, cosf(theta),  -sinf(theta),  0,
+                    0, sinf(theta),   cosf(theta),  0,
+                    0, 0,             0,            1};
+  return Matrix(4, 4, values); 
 }
 
-/*
- * RotY
- *
- * Constructs a 3-Dimensional rotation matrix
- * around the Y-Axis.
- *
- * @param theta double: angle to rotate in radians
+/**
+ * @brief  Computes rotation matrix around the Y-Axis
+ *         using the left-hand rule.
+ * @param theta: Angle in radians to rotate
+ * @return Matrix: Y-Axis Rotation Matrix
  */
-const Matrix RotY( const double theta )
-{
-    double values[] = {  cos( theta ), 0, sin( theta ), 0,
-                         0,            1, 0,            0,
-                        -sin( theta ), 0, cos( theta ), 0,
-                         0,            0, 0,            1 };
-
-    return Matrix( 4, 4, values, 16 );
+Matrix RotY(const float theta) {
+  float values[] = {cosf(theta), 0, sinf(theta), 0,
+                    0,           1, 0,           0,
+                   -sinf(theta), 0, cosf(theta), 0,
+                    0,           0, 0,           1};
+  return Matrix(4, 4, values);
 }
 
-/*
- * RotZ
+/**
+ * @brief  Computes rotation matrix around the Z-Axis
+ *         using the left-hand rule.
  *
- * Constructs a 3-Dimensional rotation matrix
- * around the Z-Axis.
- *
- * @param theta double: angle to rotate in radians
+ * @param theta: Angle in radians to rotate
+ * @return Matrix: Z-Axis Rotation Matrix
  */
-const Matrix RotZ( const double theta )
-{
-    double values[] = { cos( theta ), -sin( theta ), 0, 0,
-                        sin( theta ),  cos( theta ), 0, 0,
-                        0,             0,            1, 0,
-                        0,             0,            0, 1 };
-
-    return Matrix( 4, 4, values, 16 );
+Matrix RotZ(const float theta) {
+  float values[] = {cosf(theta), -sinf(theta), 0, 0,
+                    sinf(theta),  cosf(theta), 0, 0,
+                    0,            0,           1, 0,
+                    0,            0,           0, 1};
+  return Matrix(4, 4, values);
 }
 
-/*
- * Shearing
- *
- * Constructs a Shearing Matrix.
+/**
+ * @brief  Constructs a shearing matrix.
+ * @param xy, xz, yx, yz, zx, zy: Shearing parameters.  Moves first axis in
+ *                                proportion to the second axis.
+ * @return Matrix: Shearing matrix
  */
-const Matrix Shearing( const double xy,
-                       const double xz,
-                       const double yx,
-                       const double yz,
-                       const double zx,
-                       const double zy )
-{
-    double values[] = { 1,  xy, xz, 0,
-                        yx, 1,  yz, 0,
-                        zx, zy, 1,  0,
-                        0,  0,  0,  1 };
-
-    return Matrix( 4, 4, values, 16 );
+Matrix Shearing(const float xy, const float xz,
+                const float yx, const float yz,
+                const float zx, const float zy) {
+  float vals[] = {1,  xy, xz, 0,
+                  yx, 1,  yz, 0,
+                  zx, zy, 1,  0,
+                  0,  0,  0,  1};
+  return Matrix(4, 4, vals);
 }
-
 #endif
