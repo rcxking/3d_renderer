@@ -134,10 +134,10 @@ public:
     inline bool IsPoint() const { return IsEqual(w_, 1.0); }
     inline bool IsVector() const { return IsEqual(w_, 0.0); } 
 
-private:        
+protected:        
     // Comparing floating point numbers with each other safely:
     bool IsEqual(const float num1, const float num2) const {
-      return std::fabs(num1 - num2) < 
+      return std::fabs(num1 - num2) <=
              std::numeric_limits<float>::epsilon();
     }
 
