@@ -16,30 +16,70 @@
 class Color : public Tuple
 {
 public:
-    // Default Constructor (defaults to black)
-    Color() : Tuple( 0.0, 0.0, 0.0, 0.0 ) {} 
-    Color( double red, double green, double blue ) :
-        Tuple( red, green, blue, 0.0 ) {}
+  // Default Constructor (defaults to black)
+  Color() : Tuple(0.0, 0.0, 0.0, 0.0) {
+  }
+ 
+  Color(const float red, const float green, const float blue) :
+    Tuple(red, green, blue, 0.0) {
+  }
 
-    // Accessors/Modifiers.  We don't need the m_w parameter.
-    inline double GetRed()   const { return m_x; }
-    inline double GetGreen() const { return m_y; }
-    inline double GetBlue()  const { return m_z; }
+  // Accessors/Modifiers.  We don't need the m_w parameter.
+  inline float Red()   const { return x_; }
+  inline float Green() const { return y_; }
+  inline float Blue()  const { return z_; }
 
-    inline void SetRed( const double red )     { m_x = red;   }
-    inline void SetGreen( const double green ) { m_y = green; }
-    inline void SetBlue( const double blue )   { m_z = blue;  }
+  // Comparison operator ==
+  bool operator==(const Color &rhs) const {
+    return IsEqual(x_, rhs.x_) &&
+           IsEqual(y_, rhs.y_) &&
+           IsEqual(z_, rhs.z_);
+  }
 
-    /*
-     * Compute the Hadamard product.  When two colors are multiplied
-     * together the result is a color where the red component is
-     * the product of the two colors' red components.  The same applies
-     * to the green and blue color components.
-     */
-    Color HadamardProduct( const Color& rhs ) const
-    {
-        return Color( m_x * rhs.m_x, m_y * rhs.m_y, m_z * rhs.m_z );
-    }
+  // Operator +=
+  Color &operator+=(const Color &rhs) {
+    Tuple::operator+=(rhs);
+    return *this;
+  }
+
+  // Operator +
+  Color operator+(const Color &rhs) const {
+    return Color(*this) += rhs;
+  }
+
+  // Operator -=
+  Color &operator-=(const Color &rhs) {
+    Tuple::operator-=(rhs);
+    return *this;
+  }
+
+  // Operator -
+  Color operator-(const Color &rhs) const {
+    return Color(*this) -= rhs;
+  }
+
+  // Operator *= (Scalar multiplication)
+  Color &operator*=(const float scalar) {
+    Tuple::operator*=(scalar);
+    return *this;
+  }
+
+  // Operator * (Scalar multiplication)
+  Color operator*(const float scalar) const {
+    return Color(*this) *= scalar;
+  }
+
+  // Operator *= (Hadamard product)
+  Color &operator*=(const Color &rhs) {
+    x_ *= rhs.x_;
+    y_ *= rhs.y_;
+    z_ *= rhs.z_;
+    return *this;
+  }
+
+  // Operator * (Hadamard product)
+  Color operator*(const Color &rhs) const {
+    return Color(*this) *= rhs;
+  }
 };
-
 #endif
