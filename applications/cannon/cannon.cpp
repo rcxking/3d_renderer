@@ -10,7 +10,7 @@
  */  
 
 #include "Tuple.h"
-//#include "Canvas.h"
+#include "Canvas.h"
 
 #include <iostream>
 
@@ -46,33 +46,32 @@ void Tick(World& world, Projectile& projectile) {
   projectile.velocity += (world.gravity + world.wind);
 }
 
-#if 0
 /*
  * Function to convert (X,Y) coordinates (0,0) being the bottom left to
  * image coordinates (0,0) being the top left.
  */
-Point World2Image( const Point& worldCoordinate, const int imgHeight )
-{
-    // Invert the Y-Coordinate as the only needed transformation
-    Point tmp( worldCoordinate );
-    tmp.SetY( imgHeight - tmp.GetY() );
-    return tmp;
+Tuple World2Image(const Tuple &worldCoordinate, const int imgHeight) {
+  // Invert the Y-Coordinate as the only needed transformation
+  return Point(worldCoordinate.X(), imgHeight - worldCoordinate.Y(), worldCoordinate.Z());
 } 
-#endif
 
 int main(int argc, char *argv[]) {
-  // The canvas to draw on
-  //Canvas canvas( 900, 550 );
-
   // Initialize the projectile's initial position and velocity
-  Projectile projectile = {Point(0, 1, 0), Normalize(Vector(1, 1, 0))};
+  const Tuple START     = Point(0, 1, 0);
+  const Tuple VELOCITY  = Normalize(Vector(1, 1.8, 0)) * 11.25;
+  Projectile projectile = {START, VELOCITY};
 
   std::cout << "Initial velocity: (" << projectile.velocity.X() << ", " << projectile.velocity.Y() << ", " << projectile.velocity.Z() << ")" << std::endl;
 
   std::cout << "Projectile initial position is at (" << projectile.position.X() << ", " << projectile.position.Y() << ", " << projectile.position.Z() << ")" << std::endl;
 
   // Create the world's gravity (-0.1 units/tick) and wind (-0.01 unit/tick)
-  World world = {Vector(0, -0.1, 0), Vector(-0.01, 0, 0)}; 
+  const Tuple GRAVITY = Vector(0, -0.1, 0);
+  const Tuple WIND    = Vector(-0.01, 0, 0);
+  World world         = {GRAVITY, WIND}; 
+
+  // Canvas to draw on
+  Canvas canvas(900, 550);
 
   // Run the Tick() function until the projectile has hit the ground
   while(projectile.position.Y() >= 0.0) {
@@ -80,12 +79,12 @@ int main(int argc, char *argv[]) {
     std::cout << "Projectile is now at (" << projectile.position.X() << ", " << projectile.position.Y() << ", " << projectile.position.Z() << ")" << std::endl;
 
     // Convert the world coordinate to image coordinate and plot it
-    //Point imgCoordinate = World2Image( projectile.position, canvas.GetHeight() );
-    //canvas.WritePixel( imgCoordinate.GetX(), imgCoordinate.GetY(), Color( 1, 0, 0 ) );  
+    Tuple imgCoordinate = World2Image(projectile.position, canvas.GetHeight());
+    canvas.WritePixel(imgCoordinate.X(), imgCoordinate.Y(), Color(1, 0, 0));  
   }
 
   // Save the trajectory to file
-  //canvas.WriteToPPM( "trajectory.ppm" );
+  canvas.WriteToPPM("trajectory.ppm");
 
   return 0;
 }
