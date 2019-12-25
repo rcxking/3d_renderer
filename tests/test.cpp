@@ -17,6 +17,4 @@
 #include "color_tests.h"
 #include "canvas_tests.h"
 #include "matrix_tests.h"
-#if 0
 #include "transform_tests.h"
-#endif
