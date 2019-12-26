@@ -33,6 +33,14 @@ target_include_directories(SphereCast PUBLIC
   src
 )
 
+# ShadedSphere Application
+add_executable(ShadedSphere
+  applications/shadedsphere/shadedsphere.cpp
+)
+target_include_directories(ShadedSphere PUBLIC
+  src
+)
+
 # Catch Unit Tests
 find_package(Catch2 REQUIRED)
 add_executable(Tests

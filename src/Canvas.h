@@ -95,8 +95,15 @@ public:
 
 private:
   // Scale the RGB color values from (0.0-1.0) to (0-255)
-  int ScaleColorValue( const double colorValue ) const {
-    return 255 * colorValue;   
+  int ScaleColorValue( const float colorValue ) const {
+    float clr = colorValue;
+    // Threshold the input color value to be between 0.0-1.0
+    if (clr > 1.0) {
+      clr = 1.0;
+    } else if (clr < 0.0) {
+      clr = 0.0;
+    }
+    return static_cast<int>(255 * clr);   
   }     
 
   // Canvas dimensions
