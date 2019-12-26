@@ -25,6 +25,14 @@ target_include_directories(Cannon PUBLIC
   src
 )
 
+# SphereCast Application
+add_executable(SphereCast
+  applications/spherecast/spherecast.cpp
+)
+target_include_directories(SphereCast PUBLIC
+  src
+)
+
 # Catch Unit Tests
 find_package(Catch2 REQUIRED)
 add_executable(Tests

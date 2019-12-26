@@ -18,3 +18,4 @@
 #include "canvas_tests.h"
 #include "matrix_tests.h"
 #include "transform_tests.h"
+#include "ray_tests.h"
