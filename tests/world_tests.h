@@ -16,7 +16,7 @@ SCENARIO("a world is created", "[World]") {
     World world;
 
     THEN("it is created with no objects and no light source") {
-      REQUIRE(world.GetObjects().size() == 0):
+      REQUIRE(world.GetObjects().size() == 0);
       REQUIRE(world.HasLightSource()    == false);
     }
   }
