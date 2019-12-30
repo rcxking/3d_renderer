@@ -1,16 +1,20 @@
 /*
- * spherecast.cpp
+ * shadedsphere.cpp
  *
  * A program that casts rays from an origin point at a unit sphere.
  * Rays that hit the sphere will be marked red; rays that miss the
  * sphere will be marked black.
  *
+ * The sphere will be lit using the Phong Lighting Model to create
+ * 3D shading.
+ *
  * Bryant Pong
- * 12/25/19 
+ * 12/28/19 
  */
 #include "Tuple.h"
 #include "RaySphere.h"
 #include "Canvas.h"
+#include "Lighting.h"
 
 int main(int argc, char *argv[]) {
   // Ray's origin:
@@ -46,8 +50,18 @@ int main(int argc, char *argv[]) {
   // Determine how much a pixel in the canvas represents in world space
   const float WORLD_TO_CANVAS = WALL_SIZE/CANVAS_PIXELS;
 
-  // Sphere to cast our rays at
-  const Sphere SPHERE;
+  // Sphere to cast our rays at.
+  Sphere SPHERE;
+
+  // Set the sphere material properties
+  Material mat;
+  mat.SetColor(Color(1, 0.2, 1));
+  SPHERE.SetMaterial(mat);
+
+  // Point Light for illumination
+  const Tuple LIGHT_POS = Point(-10, 10, -10);
+  const Color LIGHT_COLOR(1, 1, 1);
+  const PointLight POINT_LIGHT(LIGHT_POS, LIGHT_COLOR);
   
   // Red Color to mark rays that hit the sphere
   const Color RED(1, 0, 0);
@@ -74,12 +88,18 @@ int main(int argc, char *argv[]) {
 
       // If it's a hit, mark as red
       if (HIT.T() != FLT_MAX) {
-        canvas.WritePixel(x, y, RED);
+        const Tuple POINT = Position(ray, HIT.T());
+        const Tuple NORMAL = SPHERE.NormalAt(POINT);
+        const Tuple EYE = -ray.Direction();
+
+        const Color FINAL_COLOR = Lighting(SPHERE.GetMaterial(), POINT_LIGHT, POINT, EYE, NORMAL);
+
+        canvas.WritePixel(x, y, FINAL_COLOR);
       }
     }
   }
   
   // Write canvas to file
-  canvas.WriteToPPM("spherecast.ppm");
+  canvas.WriteToPPM("shadedsphere.ppm");
   return 0;
 }

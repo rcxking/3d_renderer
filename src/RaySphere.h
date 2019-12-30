@@ -10,6 +10,7 @@
  */
 #include "Tuple.h"
 #include "Matrix.h"
+#include "Material.h"
 
 #include <cfloat>
 #include <cmath>
@@ -78,7 +79,8 @@ public:
   Sphere() : origin_(Point(0, 0, 0)), 
              radius_(1.0),
              id_(GenerateUniqueID()),
-             transform_(Identity(4)) {
+             transform_(Identity(4)),
+             material_(Material()) {
   }
 
   /**
@@ -94,7 +96,8 @@ public:
     origin_(rhs.origin_), 
     radius_(rhs.radius_),
     id_(rhs.id_),
-    transform_(Identity(4)) {
+    transform_(rhs.transform_),
+    material_(rhs.material_) {
   }
 
   /**
@@ -107,6 +110,7 @@ public:
       radius_    = rhs.radius_;
       id_        = rhs.id_;
       transform_ = rhs.transform_;
+      material_  = rhs.material_;
     }
     return *this;
   }
@@ -118,7 +122,21 @@ public:
     return IsEqual(radius_, rhs.radius_) &&
            (origin_ == rhs.origin_) &&
            (id_ == rhs.id_) &&
-           (transform_ == rhs.transform_);
+           (transform_ == rhs.transform_) &&
+           (material_ == rhs.material_);
+  }
+
+  /**
+   * @brief  Computes the normal to the specified point on this sphere.
+   * @param point:  Point on sphere
+   * @return Tuple: Normal vector to point
+   */
+  Tuple NormalAt(const Tuple &pt) const {
+    const Tuple OBJECT_PT = Inverse(transform_) * pt;
+    const Tuple OBJECT_NORMAL = OBJECT_PT - Point(0, 0, 0);
+    Tuple worldNormal = Transpose(Inverse(transform_)) * OBJECT_NORMAL;    
+    worldNormal.SetW(0);
+    return Normalize(worldNormal); 
   }
 
   // Accessor functions
@@ -126,9 +144,10 @@ public:
   inline float Radius() const { return radius_; }  
   inline int ID() const { return id_; }
   inline Matrix Transform() const { return transform_; }
+  inline Material GetMaterial() const { return material_; }
 
   inline void SetTransform(const Matrix &trans) { transform_ = trans; }
-
+  inline void SetMaterial(const Material &mat) { material_ = mat; }
 private:
   // Floating comparison
   bool IsEqual(const float num1, const float num2) const {
@@ -153,6 +172,9 @@ private:
 
   // Transformation associated with the sphere
   Matrix transform_;
+
+  // Material associated with the sphere
+  Material material_;
 };
 
 /**
@@ -218,6 +240,7 @@ private:
 
 // Function Prototypes
 Tuple Position(const Ray &, const float);
+Tuple Reflect(const Tuple &, const Tuple &);
 std::vector<Intersection> Intersect(const Sphere &, const Ray &);
 std::vector<Intersection> Intersections(const int, ...);
 Intersection Hit(const std::vector<Intersection> &);
@@ -232,6 +255,14 @@ Ray Transform(const Ray &, const Matrix &);
  */
 Tuple Position(const Ray &ray, const float t) {
   return ray.Origin() + ray.Direction() * t;
+}
+
+/**
+ * @brief  Computes the reflection of a vector around the specified
+ *         surface normal.
+ */
+Tuple Reflect(const Tuple &vec, const Tuple &norm) {
+  return vec - norm * 2 * Dot(vec, norm);
 }
 
 /**

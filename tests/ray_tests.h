@@ -10,6 +10,7 @@
  */
 #include "RaySphere.h"
 #include "Tuple.h"
+#include "Material.h"
 
 #include <vector>
 
@@ -87,6 +88,21 @@ SCENARIO("a sphere is to be used", "[Sphere]") {
       REQUIRE(FloatCompare(SPHERE.Radius(), 1.0) == true);
       REQUIRE(SPHERE.ID()                        == 0);
       REQUIRE(SPHERE.Transform()                 == Identity(4));
+      REQUIRE(SPHERE.GetMaterial()               == Material());
+    }
+  }
+
+  GIVEN("a sphere") {
+    Sphere sphere;
+    WHEN("it is assigned a material") {
+      Material material;
+      material.SetAmbient(1.0);
+      
+      sphere.SetMaterial(material);
+
+      THEN("the material is set appropriately") {
+        REQUIRE(sphere.GetMaterial() == material);
+      }
     }
   }
 
@@ -108,6 +124,49 @@ SCENARIO("a sphere is to be used", "[Sphere]") {
       REQUIRE(SPHERE1.ID() != SPHERE2.ID());
     }
   } 
+
+  // Normal of point on a sphere tests
+  GIVEN("a sphere") {
+    const Sphere SPHERE;
+    WHEN("normals of points on a sphere are computed") {
+      const Tuple NORM1 = SPHERE.NormalAt(Point(1, 0, 0));
+      const Tuple NORM2 = SPHERE.NormalAt(Point(0, 1, 0));
+      const Tuple NORM3 = SPHERE.NormalAt(Point(0, 0, 1));
+      const Tuple NORM4 = SPHERE.NormalAt(Point(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3));
+
+      THEN("the normals are correctly computed and normalized") {
+        REQUIRE(NORM1 == Vector(1, 0, 0));
+        REQUIRE(NORM2 == Vector(0, 1, 0));
+        REQUIRE(NORM3 == Vector(0, 0, 1));
+        REQUIRE(NORM4 == Vector(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3));
+        REQUIRE(NORM4 == Normalize(NORM4));
+      }
+    }
+  }
+
+  GIVEN("a translated sphere") {
+    Sphere sphere;
+    sphere.SetTransform(Translation(0, 1, 0));
+    
+    WHEN("the normal of a point is computed") {
+      const Tuple NORM = sphere.NormalAt(Point(0, 1.70711, -0.70711));
+      THEN("the normal is correct") {
+        REQUIRE(NORM == Vector(0, 0.70711, -0.70711));
+      }
+    }
+  }
+
+  GIVEN("a transformed sphere") {
+    Sphere sphere;
+    sphere.SetTransform(Scaling(1, 0.5, 1) * RotZ(M_PI/5));
+
+    WHEN("the normal of a point is computed") {
+      const Tuple NORM = sphere.NormalAt(Point(0, sqrt(2)/2, -sqrt(2)/2));
+      THEN("the normal is correct") {
+        REQUIRE(NORM == Vector(0, 0.97014, -0.24254));
+      }
+    }
+  }
 }
 
 SCENARIO("intersections between a ray and a sphere are computed", "[Sphere]/[Ray]") {
@@ -322,6 +381,35 @@ SCENARIO("we want to determine which intersection hits a sphere") {
 
       THEN("the hit is correct") {
         REQUIRE(I == I4);
+      }
+    }
+  }
+}
+
+// Reflect() tests
+SCENARIO("reflections are computed around a normal vector") {
+  GIVEN("a vector approaching at 45 degrees and a surface normal") {
+    const Tuple VECTOR = Vector(1, -1, 0);
+    const Tuple NORMAL = Vector(0, 1, 0);
+
+    WHEN("the vector is reflected") {
+      const Tuple REFLECT = Reflect(VECTOR, NORMAL);
+
+      THEN("the reflection is correct") {
+        REQUIRE(REFLECT == Vector(1, 1, 0));
+      }
+    }
+  }
+
+  GIVEN("a slanted surface and a surface normal") {
+    const Tuple VECTOR = Vector(0, -1, 0);
+    const Tuple NORMAL = Vector(sqrt(2)/2, sqrt(2)/2, 0);
+
+    WHEN("the vector is reflected") {
+      const Tuple REFLECT = Reflect(VECTOR, NORMAL);
+
+      THEN("the reflection is correct") {
+        REQUIRE(REFLECT == Vector(1, 0, 0));
       }
     }
   }
