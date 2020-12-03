@@ -45,6 +45,14 @@ public:
     return *this;
   }
 
+  /**
+   * @brief Comparison operator==
+   */
+  bool operator==(const PointLight &rhs) const {
+    return (position_ == rhs.position_) &&
+           (intensity_ == rhs.intensity_);
+  }
+
   // Accessor functions
   inline Tuple Position() const { return position_; }
   inline Color Intensity() const { return intensity_; }

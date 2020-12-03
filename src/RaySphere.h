@@ -127,6 +127,13 @@ public:
   }
 
   /**
+   * @brief Comparison operator < (for sorting)
+   */
+  bool operator<(const Sphere &rhs) const {
+    return id_ < rhs.id_;
+  }
+
+  /**
    * @brief  Computes the normal to the specified point on this sphere.
    * @param point:  Point on sphere
    * @return Tuple: Normal vector to point

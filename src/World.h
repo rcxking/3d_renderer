@@ -12,14 +12,14 @@
 #include "RaySphere.h"
 #include "PointLight.h"
 
-#include <vector>
+#include <set>
 
 class World {
 public:
   /**
    * @brief Default Constructor
    */
-  World() : lightP_(NULL) {
+  World() : lightP_(nullptr) {
   }
 
   /**
@@ -29,7 +29,7 @@ public:
     // Delete allocated memory (if applicable)
     if (lightP_) {
       delete lightP_;
-      lightP_ = NULL;
+      lightP_ = nullptr;
     }
   }
 
@@ -53,15 +53,47 @@ public:
     return *this;
   } 
 
+  /**
+   * @brief Checks if this world contains the specified sphere.   
+   */
+  bool Contains(const Sphere &sphere) const {
+    return (objects_.find(sphere) != objects_.end()); 
+  } 
+
+  // Modifiers
+  inline void SetLightSource(const PointLight &pl) {
+    // Allocate memory if needed
+    if (!lightP_) {
+      lightP_ = new PointLight(pl);
+    }
+
+    *lightP_ = pl; 
+  }
+
   // Accessors
-  inline std::vector<Sphere> GetObjects() const { return objects_; }
-  inline bool HasLightSource() const { return (lightP_ != NULL); } 
+  inline std::set<Sphere> GetObjects() const { return objects_; }
+  inline PointLight *GetLightSource() const { return lightP_; }
+  inline bool HasLightSource() const { return (lightP_ != nullptr); } 
 
 private:
   // A World tracks a collection of objects
-  std::vector<Sphere> objects_;
+  std::set<Sphere> objects_;
 
   // Light Source
   PointLight *lightP_; 
 };
+
+// Function Prototypes
+World DefaultWorld();
+
+/**
+ * @brief Creates a default world with two spheres. 
+ */
+World DefaultWorld() {
+  World w;
+  // Create default light source
+  w.SetLightSource(PointLight(Point(-10, 10, -10), Color(1.0, 1.0, 1.0)));
+  return World();
+}
+
 #endif
