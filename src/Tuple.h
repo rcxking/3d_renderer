@@ -6,7 +6,7 @@
  *
  * Bryant Pong
  * 9/7/18
- */ 
+ */
 
 #ifndef _TUPLE_H_
 #define _TUPLE_H_
@@ -69,6 +69,7 @@ public:
       y_ += rhs.y_;
       z_ += rhs.z_;
       w_ += rhs.w_;
+      return *this;
     }
 
     // Operator +
@@ -82,6 +83,7 @@ public:
       y_ -= rhs.y_;
       z_ -= rhs.z_;
       w_ -= rhs.w_;
+      return *this;
     }
 
     // Operator -
@@ -136,9 +138,9 @@ public:
     inline void SetW(const float w) { w_ = w; }
 
     inline bool IsPoint() const { return IsEqual(w_, 1.0); }
-    inline bool IsVector() const { return IsEqual(w_, 0.0); } 
+    inline bool IsVector() const { return IsEqual(w_, 0.0); }
 
-protected:        
+protected:
     // Comparing floating point numbers with each other safely:
     bool IsEqual(const float num1, const float num2) const {
       return std::fabs(num1 - num2) <= 0.0001;
@@ -201,7 +203,7 @@ Tuple Normalize(const Tuple& vec) {
   return Tuple(vec.X() / MAG,
                vec.Y() / MAG,
                vec.Z() / MAG,
-               vec.W() / MAG); 
+               vec.W() / MAG);
 }
 
 /**

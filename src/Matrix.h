@@ -18,7 +18,7 @@
 class Matrix {
 public:
   // Create an empty matrix
-  Matrix(const int rows, const int cols) : rows_(rows), 
+  Matrix(const int rows, const int cols) : rows_(rows),
                                            cols_(cols),
                                            totalSize_(rows * cols) {
     matrix_ = new float[totalSize_];
@@ -30,7 +30,7 @@ public:
        rows_(rows), cols_(cols), totalSize_(rows * cols) {
     matrix_ = new float[totalSize_];
     // Copy values over
-    memcpy(matrix_, values, sizeof(float) * totalSize_); 
+    memcpy(matrix_, values, sizeof(float) * totalSize_);
   }
 
   // Assignment operator=
@@ -44,7 +44,7 @@ public:
       totalSize_ = rhs.totalSize_;
 
       matrix_ = new float[totalSize_];
-      memcpy(matrix_, rhs.matrix_, sizeof(float) * totalSize_);   
+      memcpy(matrix_, rhs.matrix_, sizeof(float) * totalSize_);
     }
 
     return *this;
@@ -56,7 +56,7 @@ public:
                               cols_(rhs.cols_),
                               totalSize_(rhs.totalSize_) {
     matrix_ = new float[totalSize_];
-    memcpy(matrix_, rhs.matrix_, sizeof(float) * totalSize_); 
+    memcpy(matrix_, rhs.matrix_, sizeof(float) * totalSize_);
   }
 
   // Destructor
@@ -81,27 +81,27 @@ public:
       }
     }
     return true;
-  }  
+  }
 
   // Comparison operator !=
   bool operator!=(const Matrix& rhs) const {
     return !operator==(rhs);
   }
 
-  // operator*= (matrix multiplication) 
+  // operator*= (matrix multiplication)
   Matrix& operator*= (const Matrix& rhs) {
-    Matrix temp(rows_, rhs.cols_);   
+    Matrix temp(rows_, rhs.cols_);
     for (int y = 0; y < rows_; ++y) {
       for (int x = 0; x < rhs.cols_; ++x) {
         float dotProduct = 0.0;
 
         for (int index = 0; index < cols_; ++index) {
           const int thisIndex = y * cols_ + index;
-          const int thatIndex = index * rhs.cols_ + x;  
-          dotProduct += (matrix_[thisIndex] * rhs.matrix_[thatIndex]); 
-        }  
+          const int thatIndex = index * rhs.cols_ + x;
+          dotProduct += (matrix_[thisIndex] * rhs.matrix_[thatIndex]);
+        }
 
-        temp.SetValue(y, x, dotProduct);    
+        temp.SetValue(y, x, dotProduct);
       }
     }
 
@@ -112,7 +112,7 @@ public:
     cols_ = temp.cols_;
     totalSize_ = rows_ * cols_;
     matrix_ = new float[totalSize_];
-    memcpy(matrix_, temp.matrix_, sizeof(float) * totalSize_);  
+    memcpy(matrix_, temp.matrix_, sizeof(float) * totalSize_);
 
     return *this;
   }
@@ -121,7 +121,7 @@ public:
   Matrix operator*(const Matrix& rhs) const {
     return Matrix(*this) *= rhs;
   }
-  
+
   // operator* (matrix x tuple)
   Tuple operator*(const Tuple& rhs) const {
 
@@ -130,32 +130,32 @@ public:
                       rhs.Y(),
                       rhs.Z(),
                       rhs.W()};
-    Matrix rhsMatrix(4, 1, values); 
-    Matrix result = Matrix(*this) * rhsMatrix;  
+    Matrix rhsMatrix(4, 1, values);
+    Matrix result = Matrix(*this) * rhsMatrix;
 
     Tuple product(result.GetValue(0, 0),
                   result.GetValue(1, 0),
                   result.GetValue(2, 0),
                   result.GetValue(3, 0));
-    return product;   
+    return product;
   }
-  
+
   // Accessor/modifier functions
   inline int GetRows() const { return rows_; }
   inline int GetCols() const { return cols_; }
-  inline float GetValue(const int y, const int x) const { 
-    return matrix_[y * cols_ + x]; 
+  inline float GetValue(const int y, const int x) const {
+    return matrix_[y * cols_ + x];
   }
 
-  inline void SetValue(const int y, const int x, const float val) { 
-    matrix_[y * cols_ + x] = val; 
+  inline void SetValue(const int y, const int x, const float val) {
+    matrix_[y * cols_ + x] = val;
   }
 private:
     // Matrix dimensions
     int rows_, cols_, totalSize_;
 
     // Pointer to storage backing
-    float *matrix_; 
+    float *matrix_;
 };
 
 // Function prototypes
@@ -182,7 +182,7 @@ Matrix Identity(const int n) {
   return mat;
 }
 
-/** 
+/**
  * @brief  Computes the tranpose of a matrix
  * @param mat: Matrix to compute the transpose of
  * @return Matrix: Matrix transpose
@@ -217,7 +217,7 @@ float Determinant(const Matrix &mat) {
     float det = 0.0;
     for (int x = 0; x < mat.GetCols(); ++x) {
       det += (Cofactor(mat, 0, x) * mat.GetValue(0, x));
-    } 
+    }
     return det;
   }
 }
@@ -273,7 +273,7 @@ float Cofactor(const Matrix &mat, const int row, const int col) {
   // The Cofactor is the minor if (row + col) is even and -minor if (row + col) is odd
   const float MINOR = Minor(mat, row, col);
   return ((row + col) % 2 == 0) ? MINOR : -MINOR;
-} 
+}
 
 /**
  * @brief  Checks if a matrix is invertible
@@ -301,10 +301,10 @@ Matrix Inverse(const Matrix &mat) {
   for (int row = 0; row < mat.GetRows(); ++row) {
     for (int col = 0; col < mat.GetCols(); ++col) {
       const float C = Cofactor(mat, row, col);
-      inv.SetValue(col, row, C / MAT_DET); 
+      inv.SetValue(col, row, C / MAT_DET);
     }
   }
 
-  return inv;      
+  return inv;
 }
 #endif

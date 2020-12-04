@@ -9,14 +9,14 @@
  * 3D shading.
  *
  * Bryant Pong
- * 12/28/19 
+ * 12/28/19
  */
 #include "Tuple.h"
 #include "RaySphere.h"
 #include "Canvas.h"
 #include "Lighting.h"
 
-int main(int argc, char *argv[]) {
+int main(void) {
   // Ray's origin:
   const Tuple RAY_ORIGIN = Point(0, 0, -5);
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
   const Tuple LIGHT_POS = Point(-10, 10, -10);
   const Color LIGHT_COLOR(1, 1, 1);
   const PointLight POINT_LIGHT(LIGHT_POS, LIGHT_COLOR);
-  
+
   // Red Color to mark rays that hit the sphere
   const Color RED(1, 0, 0);
 
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
   for (int y = 0; y < CANVAS_PIXELS; ++y) {
     // Compute World Y-coordinate (y > 0 = +half; y < 0 = -half)
     const float WORLD_Y = HALF - WORLD_TO_CANVAS * y;
-     
+
     for (int x = 0; x < CANVAS_PIXELS; ++x) {
       // Compute World X-coordinate (x > 0 = +half; x < 0 = -half)
       const float WORLD_X = -HALF + WORLD_TO_CANVAS * x;
@@ -80,11 +80,11 @@ int main(int argc, char *argv[]) {
 
       // Construct the ray from the origin to the wall
       const Tuple DIRECTION = Normalize(WALL_PT - RAY_ORIGIN);
-      const Ray ray(RAY_ORIGIN, DIRECTION);  
+      const Ray ray(RAY_ORIGIN, DIRECTION);
 
       // Check for intersections
       const std::vector<Intersection> XS = Intersect(SPHERE, ray);
-      const Intersection HIT = Hit(XS); 
+      const Intersection HIT = Hit(XS);
 
       // If it's a hit, mark as red
       if (HIT.T() != FLT_MAX) {
@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
       }
     }
   }
-  
+
   // Write canvas to file
   canvas.WriteToPPM("shadedsphere.ppm");
   return 0;
