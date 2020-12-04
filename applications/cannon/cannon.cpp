@@ -7,7 +7,7 @@
  *
  * Bryant Pong
  * 9/10/18
- */  
+ */
 
 #include "Tuple.h"
 #include "Canvas.h"
@@ -53,9 +53,9 @@ void Tick(World& world, Projectile& projectile) {
 Tuple World2Image(const Tuple &worldCoordinate, const int imgHeight) {
   // Invert the Y-Coordinate as the only needed transformation
   return Point(worldCoordinate.X(), imgHeight - worldCoordinate.Y(), worldCoordinate.Z());
-} 
+}
 
-int main(int argc, char *argv[]) {
+int main(void) {
   // Initialize the projectile's initial position and velocity
   const Tuple START     = Point(0, 1, 0);
   const Tuple VELOCITY  = Normalize(Vector(1, 1.8, 0)) * 11.25;
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
   // Create the world's gravity (-0.1 units/tick) and wind (-0.01 unit/tick)
   const Tuple GRAVITY = Vector(0, -0.1, 0);
   const Tuple WIND    = Vector(-0.01, 0, 0);
-  World world         = {GRAVITY, WIND}; 
+  World world         = {GRAVITY, WIND};
 
   // Canvas to draw on
   Canvas canvas(900, 550);
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
 
     // Convert the world coordinate to image coordinate and plot it
     Tuple imgCoordinate = World2Image(projectile.position, canvas.GetHeight());
-    canvas.WritePixel(imgCoordinate.X(), imgCoordinate.Y(), Color(1, 0, 0));  
+    canvas.WritePixel(imgCoordinate.X(), imgCoordinate.Y(), Color(1, 0, 0));
   }
 
   // Save the trajectory to file
