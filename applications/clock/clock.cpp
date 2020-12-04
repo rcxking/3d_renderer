@@ -13,7 +13,7 @@
 
 #include <cmath> // M_PI
 
-int main(int argc, char *argv[]) {
+int main(void) {
   // Canvas dimensions
   const int CANVAS_WIDTH  = 240;
   const int CANVAS_HEIGHT = 240;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
   /*
    * There are 12 hours on a clock's face.  We will rotate the Point p
    * by (2pi/12) = pi/6 radians and draw them on the canvas.
-   */  
+   */
   const float ROTATE_BY = M_PI/6.0;
 
   /*
@@ -49,11 +49,11 @@ int main(int argc, char *argv[]) {
     const Matrix TRANSLATE_WRT_ORIGIN = Translation(-CENTER_X, -CENTER_Y, 0);
     const Matrix TRANSLATE_BACK = Translation(CENTER_X, CENTER_Y, 0);
     const Tuple rotated = TRANSLATE_BACK * RotZ(rot) * TRANSLATE_WRT_ORIGIN * p;
-    canvas.WritePixel(rotated.X(), rotated.Y(), color); 
+    canvas.WritePixel(rotated.X(), rotated.Y(), color);
   }
 
   // Write the clock face image
-  canvas.WriteToPPM("clock.ppm");   
+  canvas.WriteToPPM("clock.ppm");
 
   return 0;
 }
