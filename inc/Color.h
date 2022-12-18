@@ -7,8 +7,8 @@
  * 9/10/18
  */
 
-#ifndef _COLOR_H_
-#define _COLOR_H_
+#ifndef __COLOR_H__
+#define __COLOR_H__
 
 #include "Tuple.h"
 
@@ -20,14 +20,14 @@ public:
   Color() : Tuple(0.0, 0.0, 0.0, 0.0) {
   }
 
-  Color(const float red, const float green, const float blue) :
+  Color(const double red, const double green, const double blue) :
     Tuple(red, green, blue, 0.0) {
   }
 
   // Accessors/Modifiers.  We don't need the m_w parameter.
-  float Red()   const { return x_; }
-  float Green() const { return y_; }
-  float Blue()  const { return z_; }
+  double Red()   const { return x_; }
+  double Green() const { return y_; }
+  double Blue()  const { return z_; }
 
   // Comparison operator ==
   bool operator==(const Color &rhs) const {
@@ -59,13 +59,13 @@ public:
   }
 
   // Operator *= (Scalar multiplication)
-  Color &operator*=(const float scalar) {
+  Color &operator*=(const double scalar) {
     Tuple::operator*=(scalar);
     return *this;
   }
 
   // Operator * (Scalar multiplication)
-  Color operator*(const float scalar) const {
+  Color operator*(const double scalar) const {
     return Color(*this) *= scalar;
   }
 
