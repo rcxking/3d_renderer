@@ -127,18 +127,18 @@ public:
     }
 
     // Accessors/Modifiers:
-    inline float X() const { return x_; }
-    inline float Y() const { return y_; }
-    inline float Z() const { return z_; }
-    inline float W() const { return w_; }
+    float X() const { return x_; }
+    float Y() const { return y_; }
+    float Z() const { return z_; }
+    float W() const { return w_; }
 
-    inline void SetX(const float x) { x_ = x; }
-    inline void SetY(const float y) { y_ = y; }
-    inline void SetZ(const float z) { z_ = z; }
-    inline void SetW(const float w) { w_ = w; }
+    void SetX(const float x) { x_ = x; }
+    void SetY(const float y) { y_ = y; }
+    void SetZ(const float z) { z_ = z; }
+    void SetW(const float w) { w_ = w; }
 
-    inline bool IsPoint() const { return IsEqual(w_, 1.0); }
-    inline bool IsVector() const { return IsEqual(w_, 0.0); }
+    bool IsPoint() const { return IsEqual(w_, 1.0); }
+    bool IsVector() const { return IsEqual(w_, 0.0); }
 
 protected:
     // Comparing floating point numbers with each other safely:

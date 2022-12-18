@@ -141,13 +141,13 @@ public:
   }
 
   // Accessor/modifier functions
-  inline int GetRows() const { return rows_; }
-  inline int GetCols() const { return cols_; }
-  inline float GetValue(const int y, const int x) const {
+  int GetRows() const { return rows_; }
+  int GetCols() const { return cols_; }
+  float GetValue(const int y, const int x) const {
     return matrix_[y * cols_ + x];
   }
 
-  inline void SetValue(const int y, const int x, const float val) {
+  void SetValue(const int y, const int x, const float val) {
     matrix_[y * cols_ + x] = val;
   }
 private:
