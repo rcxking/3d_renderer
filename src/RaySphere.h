@@ -47,19 +47,19 @@ public:
 
   /**
    * @brief Assignment operator=
-   */  
+   */
   Ray &operator=(const Ray &rhs) {
     // Check for self-assignment:
     if (this != &rhs) {
       origin_ = rhs.origin_;
       dir_ = rhs.dir_;
-    } 
+    }
     return *this;
   }
 
   // Accessor Functions
-  inline Tuple Origin() const { return origin_; }
-  inline Tuple Direction() const { return dir_; }
+  Tuple Origin() const { return origin_; }
+  Tuple Direction() const { return dir_; }
 
 private:
   // A ray has an origin point and a direction
@@ -76,7 +76,7 @@ public:
    *         around the origin and with a radius of 1.0.  Default
    *         transformation is the 4x4 identity matrix.
    */
-  Sphere() : origin_(Point(0, 0, 0)), 
+  Sphere() : origin_(Point(0, 0, 0)),
              radius_(1.0),
              id_(GenerateUniqueID()),
              transform_(Identity(4)),
@@ -90,10 +90,10 @@ public:
   }
 
   /**
-   * @brief Copy Constructor 
+   * @brief Copy Constructor
    */
   Sphere(const Sphere &rhs) :
-    origin_(rhs.origin_), 
+    origin_(rhs.origin_),
     radius_(rhs.radius_),
     id_(rhs.id_),
     transform_(rhs.transform_),
@@ -134,20 +134,20 @@ public:
   Tuple NormalAt(const Tuple &pt) const {
     const Tuple OBJECT_PT = Inverse(transform_) * pt;
     const Tuple OBJECT_NORMAL = OBJECT_PT - Point(0, 0, 0);
-    Tuple worldNormal = Transpose(Inverse(transform_)) * OBJECT_NORMAL;    
+    Tuple worldNormal = Transpose(Inverse(transform_)) * OBJECT_NORMAL;
     worldNormal.SetW(0);
-    return Normalize(worldNormal); 
+    return Normalize(worldNormal);
   }
 
   // Accessor functions
-  inline Tuple Origin() const { return origin_; }
-  inline float Radius() const { return radius_; }  
-  inline int ID() const { return id_; }
-  inline Matrix Transform() const { return transform_; }
-  inline Material GetMaterial() const { return material_; }
+  Tuple Origin() const { return origin_; }
+  float Radius() const { return radius_; }
+  int ID() const { return id_; }
+  Matrix Transform() const { return transform_; }
+  Material GetMaterial() const { return material_; }
 
-  inline void SetTransform(const Matrix &trans) { transform_ = trans; }
-  inline void SetMaterial(const Material &mat) { material_ = mat; }
+  void SetTransform(const Matrix &trans) { transform_ = trans; }
+  void SetMaterial(const Material &mat) { material_ = mat; }
 private:
   // Floating comparison
   bool IsEqual(const float num1, const float num2) const {
@@ -155,7 +155,7 @@ private:
   }
 
   // Helper function to generate a unique ID each time this is called
-  inline int GenerateUniqueID() const {
+  int GenerateUniqueID() const {
     static int nextID = 0;
     ++nextID;
     return nextID - 1;
@@ -190,7 +190,7 @@ public:
   }
 
   /**
-   * Destructor 
+   * Destructor
    */
   ~Intersection() {
   }
@@ -218,12 +218,12 @@ public:
    * Comparison operator==
    */
   bool operator==(const Intersection &rhs) const {
-    return IsEqual(t_, rhs.t_) && (object_ == rhs.object_); 
+    return IsEqual(t_, rhs.t_) && (object_ == rhs.object_);
   }
 
   // Accessors
-  inline float T() const { return t_; }
-  inline Sphere Object() const { return object_; }
+  float T() const { return t_; }
+  Sphere Object() const { return object_; }
 
 private:
   // Helper to compare floating points
@@ -235,8 +235,8 @@ private:
   float t_;
 
   // And the object the intersection hits
-  Sphere object_; 
-}; 
+  Sphere object_;
+};
 
 // Function Prototypes
 Tuple Position(const Ray &, const float);
@@ -340,15 +340,15 @@ Intersection Hit(const std::vector<Intersection> &intersects) {
 
   // Iterate through all intersections
   for (size_t i = 0; i < intersects.size(); ++i) {
-    // The hit is the intersection with the smallest positive t_ value 
+    // The hit is the intersection with the smallest positive t_ value
     if (intersects[i].T() >= 0.0 && intersects[i].T() < smallestT) {
       smallestT = intersects[i].T();
       hit = intersects[i];
     }
   }
 
-  return hit; 
-} 
+  return hit;
+}
 
 /**
  * @brief  Applies the transformation matrix to the specified ray.
@@ -356,7 +356,7 @@ Intersection Hit(const std::vector<Intersection> &intersects) {
 Ray Transform(const Ray &ray, const Matrix &transform) {
   // Apply transformation to both the ray's origin and direction:
   const Tuple TRANSFORMED_ORIGIN    = transform * ray.Origin();
-  const Tuple TRANSFORMED_DIRECTION = transform * ray.Direction();  
+  const Tuple TRANSFORMED_DIRECTION = transform * ray.Direction();
 
   return Ray(TRANSFORMED_ORIGIN, TRANSFORMED_DIRECTION);
 }

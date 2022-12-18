@@ -16,7 +16,7 @@
 class Material {
 public:
   /**
-   * @brief Default Constructor 
+   * @brief Default Constructor
    */
   Material() :
     color_(Color(1, 1, 1)),
@@ -70,18 +70,18 @@ public:
   }
 
   // Accessor functions
-  inline Color GetColor() const { return color_; }
-  inline float Ambient() const { return ambient_; }
-  inline float Diffuse() const { return diffuse_; }
-  inline float Specular() const { return specular_; }
-  inline float Shininess() const { return shininess_; }
+  Color GetColor() const { return color_; }
+  float Ambient() const { return ambient_; }
+  float Diffuse() const { return diffuse_; }
+  float Specular() const { return specular_; }
+  float Shininess() const { return shininess_; }
 
   // Modifier functions
-  inline void SetColor(const Color &clr) { color_ = clr; }
-  inline void SetAmbient(const float amb) { ambient_ = amb; }
-  inline void SetDiffuse(const float dif) { diffuse_ = dif; }
-  inline void SetSpecular(const float spec) { specular_ = spec; }
-  inline void SetShininess(const float shi) { shininess_ = shi; }
+  void SetColor(const Color &clr) { color_ = clr; }
+  void SetAmbient(const float amb) { ambient_ = amb; }
+  void SetDiffuse(const float dif) { diffuse_ = dif; }
+  void SetSpecular(const float spec) { specular_ = spec; }
+  void SetShininess(const float shi) { shininess_ = shi; }
 
 private:
   /**
@@ -104,6 +104,6 @@ private:
   float specular_;
 
   // Shininess
-  float shininess_; 
+  float shininess_;
 };
 #endif

@@ -10,7 +10,7 @@
 #ifndef _CANVAS_H_
 #define _CANVAS_H_
 
-#include "Color.h" // Each pixel is a color 
+#include "Color.h" // Each pixel is a color
 #include <cstdio>
 #include <cstring>
 
@@ -23,7 +23,7 @@ public:
     for(int i = 0; i < height_; i++) {
       canvas_[i] = new Color[width_];
     }
-  } 
+  }
 
   // Destructor:
   ~Canvas() {
@@ -50,13 +50,13 @@ public:
       sprintf(header, HEADER_TEMPLATE, width_, height_);
 
       // Write the header
-      fwrite(header, 1, strlen(header), output); 
+      fwrite(header, 1, strlen(header), output);
 
       /*
        * The data is as follows:
        * R G B
        *
-       * where R, G, B are scaled from 0 to 255. 
+       * where R, G, B are scaled from 0 to 255.
        */
       for(int y = 0; y < height_; ++y) {
         for(int x = 0; x < width_; ++x) {
@@ -65,27 +65,27 @@ public:
           int scaledRed = ScaleColorValue(nextColor.Red());
           int scaledGreen = ScaleColorValue(nextColor.Green());
           int scaledBlue = ScaleColorValue(nextColor.Blue());
-                
+
           char nextColorBody[100] = {0};
           const char *COLOR_TEMPLATE = "%d %d %d ";
           sprintf(nextColorBody, COLOR_TEMPLATE, scaledRed, scaledGreen, scaledBlue);
-                     
+
           fwrite(nextColorBody, 1, strlen(nextColorBody), output);
         }
-      }  
+      }
       fwrite("\n", 1, 1, output);
       fclose(output);
     }
-  } 
-
-  // Accessor/Modifier functions
-  inline int GetWidth() const { return width_; }
-  inline int GetHeight() const { return height_; }
-  inline Color PixelAt( const int x, const int y ) const { 
-    return canvas_[y][x]; 
   }
 
-  inline void WritePixel(const int x, const int y, const Color& color) {
+  // Accessor/Modifier functions
+  int GetWidth() const { return width_; }
+  int GetHeight() const { return height_; }
+  Color PixelAt( const int x, const int y ) const {
+    return canvas_[y][x];
+  }
+
+  void WritePixel(const int x, const int y, const Color& color) {
     // Ensure the pixel value is accessible
     if((x > 0) && (x < width_) &&
        (y > 0) && (y < height_)) {
@@ -95,7 +95,7 @@ public:
 
 private:
   // Scale the RGB color values from (0.0-1.0) to (0-255)
-  int ScaleColorValue( const float colorValue ) const {
+  int ScaleColorValue(const float colorValue) const {
     float clr = colorValue;
     // Threshold the input color value to be between 0.0-1.0
     if (clr > 1.0) {
@@ -103,8 +103,8 @@ private:
     } else if (clr < 0.0) {
       clr = 0.0;
     }
-    return static_cast<int>(255 * clr);   
-  }     
+    return static_cast<int>(255 * clr);
+  }
 
   // Canvas dimensions
   int width_, height_;
