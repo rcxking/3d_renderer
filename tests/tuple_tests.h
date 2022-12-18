@@ -20,9 +20,9 @@
  * @param num1, num2  Numbers to compare
  * @return  true if numbers are equal; false otherwise
  */
-bool FloatCompare(const float num1, const float num2) {
+bool FloatCompare(const double num1, const double num2) {
   return std::fabs(num1 - num2) < 
-         std::numeric_limits<float>::epsilon();
+         std::numeric_limits<double>::epsilon();
 }
 
 // Tuple Creation tests 
@@ -154,7 +154,7 @@ SCENARIO("a tuple can be created", "[Tuple]") {
 
     WHEN("a tuple is multiplied by a scalar") {
       const Tuple TUPLE(1, -2, 3, -4);
-      const float SCALAR = 3.5;
+      const double SCALAR = 3.5;
       const Tuple RESULT = TUPLE * SCALAR;
   
       THEN("the multiplication is computed correctly") {
@@ -165,7 +165,7 @@ SCENARIO("a tuple can be created", "[Tuple]") {
 
     WHEN("a tuple is multiplied by a fraction") {
       const Tuple TUPLE(1, -2, 3, -4);
-      const float FRACTION = 0.5;
+      const double FRACTION = 0.5;
       const Tuple RESULT = TUPLE * FRACTION;
 
       THEN("the multiplication is computed correctly") {
@@ -176,7 +176,7 @@ SCENARIO("a tuple can be created", "[Tuple]") {
 
     WHEN("a tuple is divided by a scalar") {
       const Tuple TUPLE(1, -2, 3, -4);
-      const float SCALAR = 2.0;
+      const double SCALAR = 2.0;
       const Tuple RESULT = TUPLE / SCALAR;
 
       THEN("the division is computed correctly") {
@@ -193,18 +193,18 @@ SCENARIO("a tuple can be created", "[Tuple]") {
       const Tuple VECTOR4 = Vector(1, 2, 3);
       const Tuple VECTOR5 = Vector(-1, -2, -3);
 
-      const float MAG1 = Magnitude(VECTOR1);
-      const float MAG2 = Magnitude(VECTOR2);
-      const float MAG3 = Magnitude(VECTOR3);
-      const float MAG4 = Magnitude(VECTOR4);
-      const float MAG5 = Magnitude(VECTOR5);
+      const double MAG1 = Magnitude(VECTOR1);
+      const double MAG2 = Magnitude(VECTOR2);
+      const double MAG3 = Magnitude(VECTOR3);
+      const double MAG4 = Magnitude(VECTOR4);
+      const double MAG5 = Magnitude(VECTOR5);
 
       THEN("the magnitudes are computed correctly") {
-        const float EXP1 = 1;
-        const float EXP2 = 1;
-        const float EXP3 = 1;
-        const float EXP4 = sqrtf(14);
-        const float EXP5 = sqrtf(14);
+        const double EXP1 = 1;
+        const double EXP2 = 1;
+        const double EXP3 = 1;
+        const double EXP4 = sqrt(14);
+        const double EXP5 = sqrt(14);
 
         REQUIRE(FloatCompare(MAG1, EXP1) == true);
         REQUIRE(FloatCompare(MAG2, EXP2) == true);      
@@ -224,7 +224,7 @@ SCENARIO("a tuple can be created", "[Tuple]") {
       
       THEN("the vectors are normalized correctly") {
         const Tuple EXP1 = Vector(1, 0, 0);
-        const Tuple EXP2 = Vector(1 / sqrtf(14), 2 / sqrtf(14), 3 / sqrtf(14));
+        const Tuple EXP2 = Vector(1 / sqrt(14), 2 / sqrt(14), 3 / sqrt(14));
 
         REQUIRE(NORM1                               == EXP1);
         REQUIRE(NORM2                               == EXP2);
@@ -237,7 +237,7 @@ SCENARIO("a tuple can be created", "[Tuple]") {
       const Tuple VECTOR1 = Vector(1, 2, 3);
       const Tuple VECTOR2 = Vector(2, 3, 4);
       
-      const float DOT = Dot(VECTOR1, VECTOR2);
+      const double DOT = Dot(VECTOR1, VECTOR2);
 
       THEN("the dot product is computed correctly") {
         REQUIRE(FloatCompare(DOT, 20.0) == true);
