@@ -50,6 +50,7 @@ find_package(Catch2 REQUIRED)
 add_executable(Tests
   tests/test.cpp
   src/Canvas.cpp
+  src/Tuple.cpp
 )
 target_compile_options(Tests PRIVATE -Wall -Werror)
 target_include_directories(Tests PUBLIC

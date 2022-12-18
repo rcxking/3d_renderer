@@ -8,10 +8,11 @@
  * 9/7/18
  */
 
-#ifndef _TUPLE_H_
-#define _TUPLE_H_
+#ifndef __TUPLE_H__
+#define __TUPLE_H__
 
 #include <cmath>
+#include <limits>
 
 class Tuple
 {
@@ -24,7 +25,7 @@ public:
     }
 
     // Constructor with arguments
-    Tuple(const float x, const float y, const float z, const float w) :
+    Tuple(const double x, const double y, const double z, const double w) :
       x_(x),
       y_(y),
       z_(z),
@@ -97,7 +98,7 @@ public:
     }
 
     // Operator *= (Scalar multiplication)
-    Tuple &operator*=(const float scalar) {
+    Tuple &operator*=(const double scalar) {
       x_ *= scalar;
       y_ *= scalar;
       z_ *= scalar;
@@ -107,12 +108,12 @@ public:
     }
 
     // Operator * (Scalar multiplication)
-    Tuple operator*(const float scalar) const {
+    Tuple operator*(const double scalar) const {
       return Tuple(*this) *= scalar;
     }
 
     // Operator /= (Scalar division)
-    Tuple &operator/=(const float scalar) {
+    Tuple &operator/=(const double scalar) {
       x_ /= scalar;
       y_ /= scalar;
       z_ /= scalar;
@@ -122,38 +123,38 @@ public:
     }
 
     // Operator / (Scalar division)
-    Tuple operator/(const float scalar) const {
+    Tuple operator/(const double scalar) const {
       return Tuple(*this) /= scalar;
     }
 
     // Accessors/Modifiers:
-    float X() const { return x_; }
-    float Y() const { return y_; }
-    float Z() const { return z_; }
-    float W() const { return w_; }
+    double X() const { return x_; }
+    double Y() const { return y_; }
+    double Z() const { return z_; }
+    double W() const { return w_; }
 
-    void SetX(const float x) { x_ = x; }
-    void SetY(const float y) { y_ = y; }
-    void SetZ(const float z) { z_ = z; }
-    void SetW(const float w) { w_ = w; }
+    void SetX(const double x) { x_ = x; }
+    void SetY(const double y) { y_ = y; }
+    void SetZ(const double z) { z_ = z; }
+    void SetW(const double w) { w_ = w; }
 
     bool IsPoint() const { return IsEqual(w_, 1.0); }
     bool IsVector() const { return IsEqual(w_, 0.0); }
 
 protected:
     // Comparing floating point numbers with each other safely:
-    bool IsEqual(const float num1, const float num2) const {
-      return std::fabs(num1 - num2) <= 0.0001;
+    bool IsEqual(const double num1, const double num2) const {
+      return std::fabs(num1 - num2) <= std::numeric_limits<double>::epsilon();
     }
 
     // (x, y, z) coordinates:
-    float x_, y_, z_;
+    double x_, y_, z_;
 
     /*
      * Set to 1.0 if this Tuple represents a point; 0.0 if this
      * Tuple represents a vector.
      */
-    float w_;
+    double w_;
 };
 
 /**
@@ -162,9 +163,7 @@ protected:
  * @param x, y, z: (x, y, z) coordinates.
  * @return a Tuple representation of a point.
  */
-Tuple Point(const float x, const float y, const float z) {
-  return Tuple(x, y, z, 1.0);
-}
+Tuple Point(const double x, const double y, const double z);
 
 /**
  * @brief  Constructs a Tuple object that is a vector with
@@ -173,22 +172,15 @@ Tuple Point(const float x, const float y, const float z) {
  * @param x, y, z: (x, y, z) coordinates.
  * @return a Tuple representation of a vector.
  */
-Tuple Vector(const float x, const float y, const float z) {
-  return Tuple(x, y, z, 0.0);
-}
+Tuple Vector(const double x, const double y, const double z);
 
 /**
  * @brief  Computes the magnitude of a vector.
  *
  * @param vec: The vector to compute the magnitude of
- * @return float The magnitude of the input vector.
+ * @return double The magnitude of the input vector.
  */
-float Magnitude(const Tuple& vec) {
-  return sqrtf(vec.X() * vec.X() +
-               vec.Y() * vec.Y() +
-               vec.Z() * vec.Z() +
-               vec.W() * vec.W());
-}
+double Magnitude(const Tuple& vec);
 
 /**
  * @brief  Normalizes the given vector.
@@ -196,28 +188,15 @@ float Magnitude(const Tuple& vec) {
  * @param vec: The vector to normalize
  * @return Tuple: The normalized vector.
  */
-Tuple Normalize(const Tuple& vec) {
-  // Compute vector's magnitude:
-  const float MAG = Magnitude(vec);
-
-  return Tuple(vec.X() / MAG,
-               vec.Y() / MAG,
-               vec.Z() / MAG,
-               vec.W() / MAG);
-}
+Tuple Normalize(const Tuple& vec);
 
 /**
  * @brief  Computes the dot product of two vectors.
  *
  * @param vec1, vec2: The two vectors to compute the dot product of.
- * @return float: Computed dot product.
+ * @return double: Computed dot product.
  */
-float Dot(const Tuple &vec1, const Tuple &vec2) {
-  return vec1.X() * vec2.X() +
-         vec1.Y() * vec2.Y() +
-         vec1.Z() * vec2.Z() +
-         vec1.W() * vec2.W();
-}
+double Dot(const Tuple &vec1, const Tuple &vec2);
 
 /**
  * @brief  Computes the cross product of two vectors.
@@ -225,9 +204,5 @@ float Dot(const Tuple &vec1, const Tuple &vec2) {
  * @param vec1, vec2: The two vectors to compute the cross product of.
  * @return Tuple: Cross product.
  */
-Tuple Cross(const Tuple &vec1, const Tuple &vec2) {
-  return Vector(vec1.Y() * vec2.Z() - vec1.Z() * vec2.Y(),
-                vec1.Z() * vec2.X() - vec1.X() * vec2.Z(),
-                vec1.X() * vec2.Y() - vec1.Y() * vec2.X());
-}
+Tuple Cross(const Tuple &vec1, const Tuple &vec2);
 #endif

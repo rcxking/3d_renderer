@@ -14,6 +14,7 @@
 
 // The actual tests are located in these headers:
 #include "tuple_tests.h"
+#if 0
 #include "color_tests.h"
 #include "canvas_tests.h"
 #include "matrix_tests.h"
@@ -22,3 +23,4 @@
 #include "light_tests.h"
 #include "material_tests.h"
 #include "lighting_tests.h"
+#endif
