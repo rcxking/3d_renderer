@@ -22,6 +22,16 @@ public:
   }
 
   /**
+   * @brief Destructor
+   */
+  ~World() {
+    if (light_source_ != nullptr) {
+      delete light_source_;
+      light_source_ = nullptr;
+    }
+  }
+
+  /**
    * @brief Gives the number of objects this world contains
    * @return size_t Number of objects within this world
    */

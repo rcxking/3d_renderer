@@ -24,6 +24,15 @@ SCENARIO("a world can be created", "[World]") {
       REQUIRE(w.GetLightSource() == nullptr);
     }
   }
-}
 
+  GIVEN("an empty world is created") {
+    WHEN("the DefaultWorld() function is called()") {
+      const World w = DefaultWorld();
+      THEN("the world has the correct default values") {
+        const PointLight light(Point(-10, 10, 10), Color(1, 1, 1));
+
+      }
+    }
+  }
+}
 #endif
