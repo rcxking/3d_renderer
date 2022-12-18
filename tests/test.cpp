@@ -22,3 +22,4 @@
 #include "light_tests.h"
 #include "material_tests.h"
 #include "lighting_tests.h"
+#include "world_tests.h"
